@@ -11,4 +11,13 @@ package ch.newscron.encryption;
  */
 public class Encryption {
     
+    public static String encode(String word, String key) {
+        // TODO
+        return null;
+    }
+    
+    public static String decode(String url, String key) {
+        // TODO
+        return null;
+    }
 }
