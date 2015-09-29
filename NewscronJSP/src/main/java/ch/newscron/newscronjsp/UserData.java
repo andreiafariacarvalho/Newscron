@@ -4,8 +4,11 @@
  * and open the template in the editor.
  */
 package ch.newscron.newscronjsp;
-
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 import ch.newscron.encryption.Encryption;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 /**
  *
@@ -48,10 +51,20 @@ public class UserData {
     
     public String getVal() { return val; }
 
-    public void setURLtoEncode() throws Exception {
-        String fullParam = custID + '$' +  rew1  + '$' + rew2  + '$' + val;
-        urlEncoded = Encryption.encode(fullParam.trim());
+    
+    public JSONObject createJSON(String custID, String rew1, String rew2, String val) {
+        JSONObject obj = new JSONObject();
+        obj.put("custID", custID);
+        obj.put("rew1", rew1);
+        obj.put("rew2", rew2);
+        obj.put("val", val);
+        return obj;
     }
+    public void setURLtoEncode() throws Exception {
+        JSONObject fullParam = createJSON(custID, rew1, rew2, val);
+        urlEncoded = Encryption.encode(fullParam.toString());
+    }
+    
     
     public String getURLtoEncode() {
         return urlEncoded;
@@ -65,5 +78,11 @@ public class UserData {
         byte[] encoded = urlEncoded.getBytes();
         return new String("" + encoded.length);
     }
+    
+    public String getFullURL () {
+        return "http://localhost:8080/invite/" + urlEncoded;
+    }
+    
+    
 
 }
