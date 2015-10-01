@@ -5,6 +5,9 @@
  */
 package ch.newscron.encryption;
 
+import java.io.UnsupportedEncodingException;
+import java.security.NoSuchAlgorithmException;
+import org.json.simple.parser.ParseException;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -37,9 +40,25 @@ public class EncryptionJUnitTest {
     public void tearDown() {
     }
 
-    // TODO add test methods here.
-    // The methods must be annotated with annotation @Test. For example:
-    //
-    // @Test
-    // public void hello() {}
+    @Test
+    public void encodeTest() throws UnsupportedEncodingException, NoSuchAlgorithmException, ParseException {
+//        String nullEncoded = Encryption.encode(null);
+//        assertNull(nullEncoded);
+//        String string = "helloworld";
+//        String stringEncoded = Encryption.encode(string);
+//        assertNotNull(stringEncoded);
+//        assertFalse(string.equals(stringEncoded));
+//        assertTrue(string.length() < stringEncoded.length());
+    }
+    
+    @Test
+    public void decodeTest() throws UnsupportedEncodingException, NoSuchAlgorithmException, ParseException {
+//        String nullDecoded = Encryption.decode(null);
+//        assertNull(nullDecoded);
+//        String string = "helloworld";
+//        String stringEncoded = Encryption.encode(string);
+//        String stringDecoded = Encryption.decode(stringEncoded);
+//        assertNotNull(stringDecoded);
+//        assertTrue(string.equals(stringDecoded));
+    }
 }

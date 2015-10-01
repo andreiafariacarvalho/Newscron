@@ -23,7 +23,8 @@ public class UserData {
     String val;
     String urlEncoded;
 
-
+    public UserData() {
+    }
     public void setCustID( String value )
     {
         custID = value;
