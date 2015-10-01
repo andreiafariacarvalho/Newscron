@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<web-app>
+<welcome-file-list>
+   <welcome-file>beansform.jsp</welcome-file>
+</welcome-file-list>
+<servlet>
+        <servlet-name>inviteData</servlet-name>
+        <jsp-file>/invite.jsp</jsp-file>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>inviteData</servlet-name>
+        <url-pattern>/invite/*</url-pattern>
+    </servlet-mapping>
+</web-app>
