@@ -28,6 +28,7 @@ public class Encryption {
     
     private static final byte[] key = "newscron12345678".getBytes(); //Key for AES - multiple of 16bytes. Generate random?
     private static String iv = "AAAAAAAAAAAAAAAA";
+    //HEHEHEHE
 
     /**
      * 
