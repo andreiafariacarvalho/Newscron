@@ -16,7 +16,7 @@
         <title>JSP Page</title>
     </head>
     <body>
-        <h1>Decoded Link!</h1>
+        <h1>URL handling</h1>
         Encoded Data: <%= invite.getDataFromURL(request.getRequestURL().toString()) %> <br>
         <%= invite.parseURL() %>
         

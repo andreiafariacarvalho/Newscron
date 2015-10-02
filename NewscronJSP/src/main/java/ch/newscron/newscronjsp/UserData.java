@@ -66,7 +66,6 @@ public class UserData {
         urlEncoded = Encryption.encode(fullParam);
     }
     
-    
     public String getURLtoEncode() {
         return urlEncoded;
     }
@@ -75,10 +74,6 @@ public class UserData {
         return Encryption.decode(urlEncoded.trim());
     }
     
-    public String getNumberBytes() {
-        byte[] encoded = urlEncoded.getBytes();
-        return new String("" + encoded.length);
-    }
     
     public String getFullURL () {
         return "http://localhost:8080/invite/" + urlEncoded;
