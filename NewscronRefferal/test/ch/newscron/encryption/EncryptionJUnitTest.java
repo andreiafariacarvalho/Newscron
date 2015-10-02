@@ -5,6 +5,8 @@
  */
 package ch.newscron.encryption;
 
+import static ch.newscron.encryption.Encryption.JSONObjectToString;
+import static ch.newscron.encryption.Encryption.checkJSONObject;
 import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
 import org.json.simple.JSONObject;
@@ -102,5 +104,53 @@ public class EncryptionJUnitTest {
         encodedWrong = "vKnxBLGBGdG3PIibiZlv4w8DpyQfvPhtz_7HayuA6b2-DC1M45RL7LcBc_p2IIXl4eXDphGxx5esQx74kE-txVij1KuqgW6J7pC2yCSIDxVfJkfHdubKRdvC7aFhclXq";
         stringDecoded = Encryption.decode(encodedWrong);
         assertTrue(stringDecoded.equals("corrupt"));
+    }
+    
+    @Test
+    public void JSONObjectToStringTest() throws ParseException {
+        
+        // Without hash
+        String string = "{\"custID\":\"123456\",\"rew1\":\"10\",\"rew2\":\"20%\",\"val\":\"10.10.10\"}";
+        JSONParser parser = new JSONParser();
+        JSONObject j = (JSONObject) parser.parse(string);
+        assertTrue(string.equals(JSONObjectToString(j)));
+        
+        // With hash
+        string = "{\"custID\":\"123456\",\"rew1\":\"10\",\"rew2\":\"20%\",\"val\":\"10.10.10\",\"hash\":\"mnvdnkfv\"}";
+        j = (JSONObject) parser.parse(string);
+        assertTrue(string.equals(JSONObjectToString(j)));
+        
+        // With null hash
+        assertTrue("".equals(JSONObjectToString(null)));
+    }
+    
+    @Test
+    public void checkJSONObjectTest() throws ParseException {
+        
+        // With null JSONObject
+        assertFalse(checkJSONObject(null));
+        
+        // With good JSONObject
+        String string = "{\"val\":\"10.10.10\",\"rew1\":\"10\",\"rew2\":\"20%\",\"custID\":\"123456\"}";
+        JSONParser parser = new JSONParser();
+        JSONObject obj = (JSONObject) parser.parse(string);
+        assertTrue(checkJSONObject(obj));
+        
+        // With not appropriate data
+        obj = (JSONObject) parser.parse(string);
+        obj.remove("custID");
+        assertFalse(checkJSONObject(obj));
+        obj = (JSONObject) parser.parse(string);
+        obj.remove("rew1");
+        obj.put("new", "data");
+        assertFalse(checkJSONObject(obj));
+        obj = (JSONObject) parser.parse(string);
+        obj.remove("rew2");
+        assertFalse(checkJSONObject(obj));
+        obj = (JSONObject) parser.parse(string);
+        obj.remove("val");
+        assertFalse(checkJSONObject(obj));
+        obj.put("new", "data");
+        assertFalse(checkJSONObject(obj));
     }
 }

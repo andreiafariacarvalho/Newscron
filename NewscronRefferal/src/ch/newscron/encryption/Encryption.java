@@ -10,7 +10,6 @@ package ch.newscron.encryption;
  * @author andreiafariacarvalho + dintamari
  */
 
-
 import java.io.UnsupportedEncodingException;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
@@ -32,17 +31,16 @@ import javax.crypto.spec.IvParameterSpec;
 public class Encryption {
     
     private static final byte[] key = "newscron12345678".getBytes(); //Key for AES - multiple of 16bytes. Generate random?
-    private static String iv = "AAAAAAAAAAAAAAAA";
+    private static final String iv = "AAAAAAAAAAAAAAAA";
 
     /**
-     * 
-     * @param JSONparams
+     * Given a JSONObject, it is encoded and returned as a String.
+     * @param JSONparams is a JSONObject having the data with the keys "custID", "rew1", "rew2" and "val"
      * @return encoded string
-     * @throws java.io.UnsupportedEncodingException
-     * @throws java.security.NoSuchAlgorithmException
-     * @throws org.json.simple.parser.ParseException
+     * @throws UnsupportedEncodingException
+     * @throws NoSuchAlgorithmException
+     * @throws ParseException 
      */
-    
     public static String encode(JSONObject JSONparams) throws UnsupportedEncodingException, NoSuchAlgorithmException, ParseException {
         
         if(checkJSONObject(JSONparams)) {
@@ -66,8 +64,8 @@ public class Encryption {
     }
 
     /**
-     * 
-     * @param encodedUrl 
+     * Given a String, it is decoded and the result is returned as a String as well.
+     * @param encodedUrl is a String that have the full data encrypted
      * @return decoded String
      */
     public static String decode(String encodedUrl) {
@@ -98,26 +96,38 @@ public class Encryption {
         return "error";
     }
     
+    /**
+     * Given a JSONObject, it is returned the same object in a String format.
+     * @param obj is the JSONObject to stringify
+     * @return JSONObject stringified
+     */
     public static String JSONObjectToString(JSONObject obj) {
-        String JSONstringify;
-        if(obj.get("hash") == null) {
-            JSONstringify = "{\"" + 
-                                "custID" + "\":\"" + obj.get("custID").toString() + "\",\"" +
-                                "rew1" + "\":\"" + obj.get("rew1").toString() + "\",\"" +
-                                "rew2" + "\":\"" + obj.get("rew2").toString() + "\",\"" +
-                                "val" + "\":\"" + obj.get("val").toString() + "\"}";
-        } else {
-            JSONstringify = "{\"" + 
-                                "custID" + "\":\"" + obj.get("custID").toString() + "\",\"" +
-                                "rew1" + "\":\"" + obj.get("rew1").toString() + "\",\"" +
-                                "rew2" + "\":\"" + obj.get("rew2").toString() + "\",\"" +
-                                "val" + "\":\"" + obj.get("val").toString() + "\",\"" +
-                                "hash" + "\":\"" + obj.get("hash").toString() + "\"}";
+        if(obj != null) {
+            String JSONstringify;
+            if(obj.get("hash") == null) {
+                JSONstringify = "{\"" + 
+                                    "custID" + "\":\"" + obj.get("custID").toString() + "\",\"" +
+                                    "rew1" + "\":\"" + obj.get("rew1").toString() + "\",\"" +
+                                    "rew2" + "\":\"" + obj.get("rew2").toString() + "\",\"" +
+                                    "val" + "\":\"" + obj.get("val").toString() + "\"}";
+            } else {
+                JSONstringify = "{\"" + 
+                                    "custID" + "\":\"" + obj.get("custID").toString() + "\",\"" +
+                                    "rew1" + "\":\"" + obj.get("rew1").toString() + "\",\"" +
+                                    "rew2" + "\":\"" + obj.get("rew2").toString() + "\",\"" +
+                                    "val" + "\":\"" + obj.get("val").toString() + "\",\"" +
+                                    "hash" + "\":\"" + obj.get("hash").toString() + "\"}";
+            }
+            return JSONstringify;
         }
-        
-        return JSONstringify;
+        return "";
     }
     
+    /**
+     * Given a JSONObject, it is checked if it is a good JSONObject depending what data we need.
+     * @param obj is the JSONObject to check
+     * @return true if the JSONObject is a good one, false otherwise
+     */
     public static boolean checkJSONObject(JSONObject obj) {
         return obj != null && obj.size() == 4 && obj.get("custID") != null && obj.get("rew1") != null && obj.get("rew2") != null && obj.get("val") != null;
     }
