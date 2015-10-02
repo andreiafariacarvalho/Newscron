@@ -63,7 +63,7 @@ public class UserData {
     }
     public void setURLtoEncode() throws Exception {
         JSONObject fullParam = createJSON(custID, rew1, rew2, val);
-        urlEncoded = Encryption.encode(fullParam.toString());
+        urlEncoded = Encryption.encode(fullParam);
     }
     
     

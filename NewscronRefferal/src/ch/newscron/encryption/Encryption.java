@@ -12,12 +12,17 @@ package ch.newscron.encryption;
 
 
 import java.io.UnsupportedEncodingException;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
 import javax.crypto.spec.SecretKeySpec;
 import javax.crypto.Cipher;
 import org.apache.commons.codec.binary.Base64;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -28,44 +33,36 @@ public class Encryption {
     
     private static final byte[] key = "newscron12345678".getBytes(); //Key for AES - multiple of 16bytes. Generate random?
     private static String iv = "AAAAAAAAAAAAAAAA";
-    //HEHEHEHE
 
     /**
      * 
-     * @param params String that includes id, rew1, rew2, validity
+     * @param JSONparams
      * @return encoded string
+     * @throws java.io.UnsupportedEncodingException
+     * @throws java.security.NoSuchAlgorithmException
+     * @throws org.json.simple.parser.ParseException
      */
     
-    public static void main(String[] args) throws UnsupportedEncodingException, NoSuchAlgorithmException, ParseException {        
-        String JSON = "{\"val\":\"10.10.10\",\"rew1\":\"10\",\"rew2\":\"20%\",\"custID\":\"123456\"}";
+    public static String encode(JSONObject JSONparams) throws UnsupportedEncodingException, NoSuchAlgorithmException, ParseException {
         
-        String encodedResult = encode(JSON);
-        System.out.println("EncodedRes: " + encodedResult);
-        
-        String decodedResult = decode(encodedResult);
-        System.out.println("DecodedRes: " + decodedResult);
-        
-    }
-    public static String encode(String params) throws UnsupportedEncodingException, NoSuchAlgorithmException, ParseException {
-        
-        MessageDigest m = MessageDigest.getInstance("MD5");
-        byte[] hashOfData = m.digest(params.getBytes("UTF-8"));
+        if(checkJSONObject(JSONparams)) {
+            try {
+                MessageDigest m = MessageDigest.getInstance("MD5");
+                byte[] hashOfData = m.digest(JSONObjectToString(JSONparams).getBytes("UTF-8"));
 
-        JSONParser parser = new JSONParser();
-        JSONObject j = (JSONObject) parser.parse(params);
-        j.put("hash", Arrays.toString(hashOfData));
+                JSONObject j = JSONparams;
+                j.put("hash", Arrays.toString(hashOfData));
+
+                String params = JSONObjectToString(j);
+            
+                Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+                final SecretKeySpec secretKey = new SecretKeySpec(key, "AES");
+                cipher.init(Cipher.ENCRYPT_MODE, secretKey, new IvParameterSpec(iv.getBytes("UTF-8")));
+                return Base64.encodeBase64URLSafeString(cipher.doFinal(params.getBytes())); //to ensure valid URL characters
+            } catch (NoSuchAlgorithmException | NoSuchPaddingException | UnsupportedEncodingException | InvalidKeyException | InvalidAlgorithmParameterException | IllegalBlockSizeException | BadPaddingException | NullPointerException e) {}
+        }
         
-        params = j.toString();
-        try {
-            Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
-            final SecretKeySpec secretKey = new SecretKeySpec(key, "AES");
-            cipher.init(Cipher.ENCRYPT_MODE, secretKey, new IvParameterSpec(iv.getBytes("UTF-8")));
-            return Base64.encodeBase64URLSafeString(cipher.doFinal(params.getBytes())); //to ensure valid URL characters
-        }
-        catch (Exception e) {
-           e.printStackTrace();
-        }
-        return null;
+        return "error";
     }
 
     /**
@@ -75,39 +72,54 @@ public class Encryption {
      */
     public static String decode(String encodedUrl) {
         
-        
         try {
             Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
             final SecretKeySpec secretKey = new SecretKeySpec(key, "AES");
             cipher.init(Cipher.DECRYPT_MODE, secretKey, new IvParameterSpec(iv.getBytes("UTF-8")));
             
             String result = new String(cipher.doFinal(Base64.decodeBase64(encodedUrl)));
-            System.out.println("res: " + result);
             
             JSONParser parser = new JSONParser();
             JSONObject j = (JSONObject) parser.parse(result);
             String receivedHash = (String) j.get("hash");
             j.remove("hash");
             
-            MessageDigest m = MessageDigest.getInstance("MD5");
-            byte[] hashOfData = m.digest(j.toString().getBytes("UTF-8"));
-            
-            
-            if (receivedHash.equals(Arrays.toString(hashOfData))) {
-                System.out.println("VALID");
+            if(checkJSONObject(j)) {
+                MessageDigest m = MessageDigest.getInstance("MD5");
+                byte[] hashOfData = m.digest(JSONObjectToString(j).getBytes("UTF-8"));
+                if (receivedHash.equals(Arrays.toString(hashOfData))) {
+                    return JSONObjectToString(j);
+                } else {
+                    return "corrupt";
+                }
             }
-            
-            else {
-                System.out.println("HACKED");
-            }
-            
-            return result;
-        }
-        catch (Exception e) {
-          e.printStackTrace();
-        }
-        return null;
+        } catch (NoSuchAlgorithmException | NoSuchPaddingException | UnsupportedEncodingException | InvalidKeyException | InvalidAlgorithmParameterException | IllegalBlockSizeException | BadPaddingException | ParseException | NullPointerException | IllegalArgumentException e) {}
+        
+        return "error";
     }
+    
+    public static String JSONObjectToString(JSONObject obj) {
+        String JSONstringify;
+        if(obj.get("hash") == null) {
+            JSONstringify = "{\"" + 
+                                "custID" + "\":\"" + obj.get("custID").toString() + "\",\"" +
+                                "rew1" + "\":\"" + obj.get("rew1").toString() + "\",\"" +
+                                "rew2" + "\":\"" + obj.get("rew2").toString() + "\",\"" +
+                                "val" + "\":\"" + obj.get("val").toString() + "\"}";
+        } else {
+            JSONstringify = "{\"" + 
+                                "custID" + "\":\"" + obj.get("custID").toString() + "\",\"" +
+                                "rew1" + "\":\"" + obj.get("rew1").toString() + "\",\"" +
+                                "rew2" + "\":\"" + obj.get("rew2").toString() + "\",\"" +
+                                "val" + "\":\"" + obj.get("val").toString() + "\",\"" +
+                                "hash" + "\":\"" + obj.get("hash").toString() + "\"}";
+        }
+        
+        return JSONstringify;
+    }
+    
+    public static boolean checkJSONObject(JSONObject obj) {
+        return obj != null && obj.size() == 4 && obj.get("custID") != null && obj.get("rew1") != null && obj.get("rew2") != null && obj.get("val") != null;
+    }
+    
 }
-
-// MUAHAHAH
