@@ -25,32 +25,38 @@ public class Encryption {
     private static final byte[] key = "newscron12345678".getBytes(); //Key for AES algorithm - it has to be a multiple of 16bytes
     private static final String initializationVector = "AAAAAAAAAAAAAAAA"; //needed for AES algorithm
 
-    
-//    public static String encode(JSONObject JSONparams) {
-//        MessageDigest m = MessageDigest.getInstance("MD5");
-//        byte[] hashOfData = m.digest(JSONObjectToString(JSONparams).getBytes("UTF-8"));
-//        
-//        return encode(JSONparams, Arrays.toString(hashOfData));
-//        
-//    }
-//    
-//    protected static String encode(JSONObject JSONparams, String md5Hash) throws UnsupportedEncodingException, NoSuchAlgorithmException, ParseException {
-      
     /**
      * Given a JSONObject, it is encoded and returned as a String.
      * @param inviteData is a JSONObject having the data with the keys "custID", "rew1", "rew2" and "val"
      * @return encoded string 
      */
     public static String encode(JSONObject inviteData) {
+        return encode(inviteData, null);
+        
+    }
+  
+    /**
+     * Given a JSONObject, and maybe an hash, it is encoded and returned as a String.
+     * @param inviteData is a JSONObject having the data with the keys "custID", "rew1", "rew2" and "val"
+     * @param md5Hash is a String that substitute the hash computed using md5 algorithm, in case it is not null and not empty (it is needed to produce automatic data corrupt for tests)
+     * @return encoded string 
+     */
+    protected static String encode(JSONObject inviteData, String md5Hash) {
         
         if(checkDataValidity(inviteData)) {
             try {
-                //Create hash from inviteData fields
-                byte[] hash = createMD5Hash(inviteData);
-                
-                //Add hash to JSONObject
-                inviteData.put("hash", Arrays.toString(hash));
+                //Check in case we want to add a given hash (having at the end a corrupt data)
+                if(md5Hash != null && !md5Hash.equals("")) {
+                    //Add md5Hash to JSONObject
+                    inviteData.put("hash", md5Hash);
+                } else {
+                    //Create hash from inviteData fields
+                    byte[] hash = createMD5Hash(inviteData);
 
+                    //Add hash to JSONObject
+                    inviteData.put("hash", Arrays.toString(hash));
+                }
+                
                 //Encode inviteData (with hash) JSONObject
                 String params = inviteData.toString();
                 Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
