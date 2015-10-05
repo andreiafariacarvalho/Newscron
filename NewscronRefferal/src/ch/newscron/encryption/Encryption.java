@@ -30,8 +30,8 @@ import javax.crypto.spec.IvParameterSpec;
 
 public class Encryption {
     
-    private static final byte[] key = "newscron12345678".getBytes(); //Key for AES - multiple of 16bytes. Generate random?
-    private static final String iv = "AAAAAAAAAAAAAAAA";
+    private static final byte[] key = "newscron12345678".getBytes(); //Key for AES algorithm - it has to be a multiple of 16bytes
+    private static final String initializationVector = "AAAAAAAAAAAAAAAA";
 
     
 //    public static String encode(JSONObject JSONparams) {
@@ -66,7 +66,7 @@ public class Encryption {
             
                 Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
                 final SecretKeySpec secretKey = new SecretKeySpec(key, "AES");
-                cipher.init(Cipher.ENCRYPT_MODE, secretKey, new IvParameterSpec(iv.getBytes("UTF-8")));
+                cipher.init(Cipher.ENCRYPT_MODE, secretKey, new IvParameterSpec(initializationVector.getBytes("UTF-8")));
                 return Base64.encodeBase64URLSafeString(cipher.doFinal(params.getBytes())); //to ensure valid URL characters
             } catch (NoSuchAlgorithmException | NoSuchPaddingException | UnsupportedEncodingException | InvalidKeyException | InvalidAlgorithmParameterException | IllegalBlockSizeException | BadPaddingException | NullPointerException e) {}
         }
@@ -84,7 +84,7 @@ public class Encryption {
         try {
             Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
             final SecretKeySpec secretKey = new SecretKeySpec(key, "AES");
-            cipher.init(Cipher.DECRYPT_MODE, secretKey, new IvParameterSpec(iv.getBytes("UTF-8")));
+            cipher.init(Cipher.DECRYPT_MODE, secretKey, new IvParameterSpec(initializationVector.getBytes("UTF-8")));
             
             String result = new String(cipher.doFinal(Base64.decodeBase64(encodedUrl)));
             
