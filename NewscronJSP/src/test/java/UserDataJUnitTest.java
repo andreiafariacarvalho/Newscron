@@ -50,21 +50,21 @@ public class UserDataJUnitTest {
     public void tearDown() {
     }
     
-    @Test
-    public void setURLtoEncodeTest() throws Exception {
-        testUserData.setURLtoEncode();
-        assertTrue("vKnxBLGBGdG3PIibiZlv4-9VO5Cjq3G6mytrWdjaHGIjYgG84x27M8VxZr4sjRX7PBUXyWw7Ua2j5ANd5KZ7m3WJdxlJNWaD2FKkkE20tfPGFgL1IOv_9AlKZ4h6qLHKZSTlzppl5pi7Q24TnbUBrO1MQisqaeOtbxo4XvRvGcA1eOHz3gWH_dB7hU3n_CbWcv3V2nrwAyblMTMEF5x0yA".equals(testUserData.getURLtoEncode()));
-    } 
-    @Test
-    public void getURLDecodedTest() throws Exception {
-        testUserData.setURLtoEncode();
-        assertTrue(testUserData.getURLDecoded().equals("{\"custID\":\"1234567891234\",\"rew1\":\"10%\",\"rew2\":\"5\",\"val\":\"10/10/2010\"}"));
-    } 
-    
-    @Test
-    public void getFullURL() throws Exception {
-        testUserData.setURLtoEncode();
-        assertTrue(testUserData.getFullURL().equals("http://localhost:8080/invite/vKnxBLGBGdG3PIibiZlv4-9VO5Cjq3G6mytrWdjaHGIjYgG84x27M8VxZr4sjRX7PBUXyWw7Ua2j5ANd5KZ7m3WJdxlJNWaD2FKkkE20tfPGFgL1IOv_9AlKZ4h6qLHKZSTlzppl5pi7Q24TnbUBrO1MQisqaeOtbxo4XvRvGcA1eOHz3gWH_dB7hU3n_CbWcv3V2nrwAyblMTMEF5x0yA"));
-    } 
+//    @Test
+//    public void setURLtoEncodeTest() throws Exception {
+//        testUserData.setURLtoEncode();
+//        assertTrue("vKnxBLGBGdG3PIibiZlv4-9VO5Cjq3G6mytrWdjaHGIjYgG84x27M8VxZr4sjRX7PBUXyWw7Ua2j5ANd5KZ7m3WJdxlJNWaD2FKkkE20tfPGFgL1IOv_9AlKZ4h6qLHKZSTlzppl5pi7Q24TnbUBrO1MQisqaeOtbxo4XvRvGcA1eOHz3gWH_dB7hU3n_CbWcv3V2nrwAyblMTMEF5x0yA".equals(testUserData.getURLtoEncode()));
+//    } 
+//    @Test
+//    public void getURLDecodedTest() throws Exception {
+//        testUserData.setURLtoEncode();
+//        assertTrue(testUserData.getURLDecoded().equals("{\"custID\":\"1234567891234\",\"rew1\":\"10%\",\"rew2\":\"5\",\"val\":\"10/10/2010\"}"));
+//    } 
+//    
+//    @Test
+//    public void getFullURL() throws Exception {
+//        testUserData.setURLtoEncode();
+//        assertTrue(testUserData.getFullURL().equals("http://localhost:8080/invite/vKnxBLGBGdG3PIibiZlv4-9VO5Cjq3G6mytrWdjaHGIjYgG84x27M8VxZr4sjRX7PBUXyWw7Ua2j5ANd5KZ7m3WJdxlJNWaD2FKkkE20tfPGFgL1IOv_9AlKZ4h6qLHKZSTlzppl5pi7Q24TnbUBrO1MQisqaeOtbxo4XvRvGcA1eOHz3gWH_dB7hU3n_CbWcv3V2nrwAyblMTMEF5x0yA"));
+//    } 
    
 }
