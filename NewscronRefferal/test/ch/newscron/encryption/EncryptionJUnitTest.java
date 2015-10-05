@@ -7,6 +7,7 @@ package ch.newscron.encryption;
 
 import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
 import java.util.Iterator;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -51,108 +52,99 @@ public class EncryptionJUnitTest {
     @Test
     public void encodeTest() throws UnsupportedEncodingException, NoSuchAlgorithmException, ParseException {
         
-    //With null string
-    assertNull(Encryption.encode(null));
-        
-    // With working string
-    String stringEncoded = Encryption.encode(inviteData);
-    assertNotNull(stringEncoded);
-    assertFalse(inviteData.toString().equals(stringEncoded));
-    assertTrue(inviteData.toString().length() < stringEncoded.length());
+        //With null string
+        assertNull(Encryption.encode(null));
 
-    // With not appropriate string
-    inviteData.put("extra", "value");
-    assertNull(Encryption.encode(inviteData));
-   
-    inviteData.remove("extra");
-    inviteData.remove("val");
-    assertNull(Encryption.encode(inviteData));
+        // With working string
+        String stringEncoded = Encryption.encode(inviteData);
+        assertNotNull(stringEncoded);
+        assertFalse(inviteData.toString().equals(stringEncoded));
+        assertTrue(inviteData.toString().length() < stringEncoded.length());
+
+        // With not appropriate string
+        inviteData.put("extra", "value");
+        assertNull(Encryption.encode(inviteData));
+
+        inviteData.remove("extra");
+        inviteData.remove("val");
+        assertNull(Encryption.encode(inviteData));
 
     }
     
     @Test
     public void decodeTest() throws UnsupportedEncodingException, NoSuchAlgorithmException, ParseException {
         
-    // With null string
-    assertNull(Encryption.decode(null));
-        
-    // With working string
-    String stringEncoded = Encryption.encode(inviteData);
-    String stringDecoded = Encryption.decode(stringEncoded);
-    assertNotNull(stringDecoded);
-//        JSONObject jString = (JSONObject) parser.parse(string);
-//        JSONObject jStringDecoded = (JSONObject) parser.parse(stringDecoded);
-//        assertTrue(jString.get("custID").equals(jStringDecoded.get("custID")));
-//        assertTrue(jString.get("rew1").equals(jStringDecoded.get("rew1")));
-//        assertTrue(jString.get("rew2").equals(jStringDecoded.get("rew2")));
-//        assertTrue(jString.get("val").equals(jStringDecoded.get("val")));
-//        assertTrue(jString.size() == jStringDecoded.size());
-//        
-//        // With not appropriate string
-//        String encodedWrong = "vKnxBLGBGdG3PIZlv4w8DpyQfvPhtz_7HayuA6b2-DC1M45RL7LcBc_p2IIXl4eXDphGxx5esQx74kE-txVij1KuqgW6J7pC2yCSIDxVfJkfHdubKRdvC7aFhclXq";
-//        stringDecoded = Encryption.decode(encodedWrong);
-//        assertTrue(stringDecoded.equals("error"));
-//        
-//        // * Right data...
-//        // JSON: {"val":"02.11.2015","custID":"12345","rew1":"40%","rew2":"50%"}
-//        // hash: [-126, 124, 75, -123, -85, -109, 100, 18, 108, 100, 21, 21, 23, -15, 67, -20]
-//        // Url decoded: vKnxBLGBGdG3PIibiZlv4w8DpyQfvPhtz_7HayuA6b2LGEqPkG8rPTzxgOS0syx7_GyBoapgPTY8mBNsyC7ogDDfZBtH73rLc8td8LDMv1rDul3xRq4tqLst0969TPc04paX-YyHEynrtb5LNe7cKpjNQYYLtRV2VhkTeejFjj9DneOwTstoMueuhSlStR3WJiaX9r_5tdiobjzW7Zn1VQ
-//        // * Corrupt data...
-//        // JSON: {"val":"02.11.2015","custID":"12345","rew1":"40%","rew2":"100%"}
-//        // hash: [-126, 124, 75, -123, -85, -109, 100, 18, 108, 100, 21, 21, 23, -15, 67, -20] which is the same as "Right data"
-//        // Url corrupt: vKnxBLGBGdG3PIibiZlv4w8DpyQfvPhtz_7HayuA6b2-DC1M45RL7LcBc_p2IIXl4eXDphGxx5esQx74kE-txVij1KuqgW6J7pC2yCSIDxVfJkfHdubKRdvC7aFhclXq
-//        encodedWrong = "vKnxBLGBGdG3PIibiZlv4w8DpyQfvPhtz_7HayuA6b2-DC1M45RL7LcBc_p2IIXl4eXDphGxx5esQx74kE-txVij1KuqgW6J7pC2yCSIDxVfJkfHdubKRdvC7aFhclXq";
-//        stringDecoded = Encryption.decode(encodedWrong);
-//        assertTrue(stringDecoded.equals("corrupt"));
+        // With null string
+        assertNull(Encryption.decode(null));
+
+        // With working string
+        String stringEncoded = Encryption.encode(inviteData);
+        String stringDecoded = Encryption.decode(stringEncoded);
+        assertNotNull(stringDecoded);
+
+        JSONParser parser = new JSONParser();
+        JSONObject decodedJSON = (JSONObject) parser.parse(stringDecoded);
+        inviteData.remove("hash");
+        assertTrue(compareJSONObjects(inviteData, decodedJSON));
+
+        // With not appropriate string (invalid)
+        String encodedWrong = "vKnxBLGBGdG3PIZlv4w8DpyQfvPhtz_7HayuA6b2-DC1M45RL7LcBc_p2IIXl4eXDphGxx5esQx74kE-txVij1KuqgW6J7pC2yCSIDxVfJkfHdubKRdvC7aFhclXq";
+        assertNull(Encryption.decode(encodedWrong));
+
+        // Hash of valid data
+        byte[] hash = Encryption.createMD5Hash(inviteData);
+
+        // Corrupt data
+        JSONObject inviteData2 = new JSONObject();
+        inviteData2.put("custID", "12345");
+        inviteData2.put("rew1", "40%");
+        inviteData2.put("rew2", "100%"); //!! Changed (in comparison to inviteData)
+        inviteData2.put("val", "05/10/2015");
+
+
+        //Send corrupt data (inviteData2) with valid hash of inviteData.
+        //The hash of the corrupt data will differ from the hash of the valid data.
+        String corruptEncodedURL = Encryption.encode(inviteData2, Arrays.toString(hash));
+        assertTrue(Encryption.decode(corruptEncodedURL).equals("")); //Indicating corrupt data
+
     }
-//    
-//    @Test
-//    public void JSONObjectToStringTest() throws ParseException {
-//        
-//        // Without hash
-//        String string = "{\"custID\":\"123456\",\"rew1\":\"10\",\"rew2\":\"20%\",\"val\":\"10.10.10\"}";
-//        JSONParser parser = new JSONParser();
-//        JSONObject j = (JSONObject) parser.parse(string);
-//        assertTrue(string.equals(JSONObjectToString(j)));
-//        
-//        // With hash
-//        string = "{\"custID\":\"123456\",\"rew1\":\"10\",\"rew2\":\"20%\",\"val\":\"10.10.10\",\"hash\":\"mnvdnkfv\"}";
-//        j = (JSONObject) parser.parse(string);
-//        assertTrue(string.equals(JSONObjectToString(j)));
-//        
-//        // With null hash
-//        assertTrue("".equals(JSONObjectToString(null)));
-//    }
-//    
-//    @Test
-//    public void checkJSONObjectTest() throws ParseException {
-//        
-//        // With null JSONObject
-//        assertFalse(checkJSONObject(null));
-//        
-//        // With good JSONObject
-//        String string = "{\"val\":\"10.10.10\",\"rew1\":\"10\",\"rew2\":\"20%\",\"custID\":\"123456\"}";
-//        JSONParser parser = new JSONParser();
-//        JSONObject obj = (JSONObject) parser.parse(string);
-//        assertTrue(checkJSONObject(obj));
-//        
-//        // With not appropriate data
-//        obj = (JSONObject) parser.parse(string);
-//        obj.remove("custID");
-//        assertFalse(checkJSONObject(obj));
-//        obj = (JSONObject) parser.parse(string);
-//        obj.remove("rew1");
-//        obj.put("new", "data");
-//        assertFalse(checkJSONObject(obj));
-//        obj = (JSONObject) parser.parse(string);
-//        obj.remove("rew2");
-//        assertFalse(checkJSONObject(obj));
-//        obj = (JSONObject) parser.parse(string);
-//        obj.remove("val");
-//        assertFalse(checkJSONObject(obj));
-//        obj.put("new", "data");
-//        assertFalse(checkJSONObject(obj));
-//    }
+
+    
+    @Test
+    public void checkDataValidityTest() throws ParseException {
+        
+        // With null JSONObject
+        assertFalse(Encryption.checkDataValidity(null));
+
+        // With good JSONObject
+        assertTrue(Encryption.checkDataValidity(inviteData));
+
+        // With not appropriate data
+        inviteData.remove("custID");
+        assertFalse(Encryption.checkDataValidity(inviteData));
+        //Valid length - invalid fields
+        inviteData = createNewInviteDataObject();
+        inviteData.remove("rew1");
+        inviteData.put("new", "data");
+        assertFalse(Encryption.checkDataValidity(inviteData));
+        //Invalid length
+        inviteData = createNewInviteDataObject();
+        inviteData.remove("rew2");
+        assertFalse(Encryption.checkDataValidity(inviteData));
+        //Invalid length
+        inviteData = createNewInviteDataObject();
+        inviteData.remove("val");
+        assertFalse(Encryption.checkDataValidity(inviteData));
+        //Invalid length
+        inviteData = createNewInviteDataObject();
+        inviteData.put("new", "data");
+        assertFalse(Encryption.checkDataValidity(inviteData));
+        //Empty key
+        inviteData = createNewInviteDataObject();
+        inviteData.remove("val");
+        inviteData.put("val", "");
+        assertFalse(Encryption.checkDataValidity(inviteData));
+    }
     
     public boolean compareJSONObjects(JSONObject one, JSONObject two) {
         if (one.keySet().size() != two.keySet().size()) {
@@ -166,5 +158,14 @@ public class EncryptionJUnitTest {
             }            
         }
         return true;
+    }
+    
+    public JSONObject createNewInviteDataObject() {
+        JSONObject testInviteData = new JSONObject();
+        testInviteData.put("custID", "12345");
+        testInviteData.put("rew1", "40%");
+        testInviteData.put("rew2", "50%");
+        testInviteData.put("val", "05/10/2015");
+        return testInviteData;
     }
 }

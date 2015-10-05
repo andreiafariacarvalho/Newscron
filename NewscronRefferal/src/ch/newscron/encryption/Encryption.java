@@ -18,6 +18,7 @@ import java.util.Arrays;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import javax.crypto.spec.IvParameterSpec;
+import org.json.simple.parser.ParseException;
 
 
 public class Encryption {
@@ -102,39 +103,11 @@ public class Encryption {
                     return "";
                 }
             }
-        } catch (Exception e) { //Other errors (encryption algorithm)
-            return e.getMessage();
+        } catch (Exception e) { //Invalid data (including encryption algorithm exceptions
+            return null;
         }
-        
-        //Invalid data
-        throw new NullPointerException("Invalid data");
+        return null;
     }
-    
-    /**
-     * Given a JSONObject, it is returned the same object in a String format.
-     * @param obj is the JSONObject to stringify
-     * @return JSONObject stringified
-     */
-//    public static String JSONObjectToString(JSONObject obj) {
-//        if(obj != null) {
-//            String JSONstringify;
-//            if(obj.get("hash") == null) {
-//                JSONstringify = obj.get("custID").toString() + "$" +
-//                                obj.get("rew1").toString() + "$" +
-//                                obj.get("rew2").toString() + "$" +
-//                                obj.get("val").toString();
-//            } else {
-//                JSONstringify = "{\"" + 
-//                                    "custID" + "\":\"" + obj.get("custID").toString() + "\",\"" +
-//                                    "rew1" + "\":\"" + obj.get("rew1").toString() + "\",\"" +
-//                                    "rew2" + "\":\"" + obj.get("rew2").toString() + "\",\"" +
-//                                    "val" + "\":\"" + obj.get("val").toString() + "\",\"" +
-//                                    "hash" + "\":\"" + obj.get("hash").toString() + "\"}";
-//            }
-//            return JSONstringify;
-//        }
-//        return "";
-//    }
     
     /**
      * Given a JSONObject, extracts its fields and computes the hash using the MD5 algorithm

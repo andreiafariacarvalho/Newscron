@@ -25,25 +25,28 @@ public class ReadInviteData {
 
     public String parseURL() throws ParseException, Exception {
         String url = Encryption.decode(encodedURL.trim());; // TODO: change the way of keeping the url (String)
-        switch (url) {
-            case "error":
+
+        if (url == null) {
                 return "<p> Invalid URL </p>";
-            case "corrupt":
+        }
+        
+        else if (url.equals("")) {
                 return "<p> Corrupt URL - invalid data! </p>";
-            default:
-                JSONParser parser = new JSONParser();
-                JSONObject newobj = (JSONObject) parser.parse(url);
-                String custID = newobj.get("custID").toString();
-                String rew1 = newobj.get("rew1").toString();
-                String rew2 = newobj.get("rew2").toString();
-                String val = newobj.get("val").toString();
-                
-                return "<table border='1'> "
-                        + "<tr> " + " <td> custID: </td> <td>" + custID + "</td> " + "</tr> "
-                        + "<tr> " + " <td> rew1: </td> <td>" + rew1 + "</td> " + "</tr> "
-                        + "<tr> " + " <td> rew2: </td> <td>" + rew2 + "</td> " + "</tr> "
-                        + "<tr> " + " <td> val: </td> <td>" + val + "</td> " + "</tr> "
-                        + "</table>";
+        }
+        else {
+            JSONParser parser = new JSONParser();
+            JSONObject newobj = (JSONObject) parser.parse(url);
+            String custID = newobj.get("custID").toString();
+            String rew1 = newobj.get("rew1").toString();
+            String rew2 = newobj.get("rew2").toString();
+            String val = newobj.get("val").toString();
+
+            return "<table border='1'> "
+                    + "<tr> " + " <td> custID: </td> <td>" + custID + "</td> " + "</tr> "
+                    + "<tr> " + " <td> rew1: </td> <td>" + rew1 + "</td> " + "</tr> "
+                    + "<tr> " + " <td> rew2: </td> <td>" + rew2 + "</td> " + "</tr> "
+                    + "<tr> " + " <td> val: </td> <td>" + val + "</td> " + "</tr> "
+                    + "</table>";
         }
     }
     public String getDataFromURL(String fullURL) {
