@@ -33,6 +33,17 @@ public class Encryption {
     private static final byte[] key = "newscron12345678".getBytes(); //Key for AES - multiple of 16bytes. Generate random?
     private static final String iv = "AAAAAAAAAAAAAAAA";
 
+    
+//    public static String encode(JSONObject JSONparams) {
+//        MessageDigest m = MessageDigest.getInstance("MD5");
+//        byte[] hashOfData = m.digest(JSONObjectToString(JSONparams).getBytes("UTF-8"));
+//        
+//        return encode(JSONparams, Arrays.toString(hashOfData));
+//        
+//    }
+//    
+//    protected static String encode(JSONObject JSONparams, String md5Hash) throws UnsupportedEncodingException, NoSuchAlgorithmException, ParseException {
+      
     /**
      * Given a JSONObject, it is encoded and returned as a String.
      * @param JSONparams is a JSONObject having the data with the keys "custID", "rew1", "rew2" and "val"
