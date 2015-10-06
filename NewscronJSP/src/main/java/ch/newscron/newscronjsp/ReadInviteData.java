@@ -41,7 +41,7 @@ public class ReadInviteData {
             String rew2 = newobj.get("rew2").toString();
             String val = newobj.get("val").toString();
 
-            return "<table border='1'> "
+            return "<table border='0' class=\"center\"> "
                     + "<tr> " + " <td> custID: </td> <td>" + custID + "</td> " + "</tr> "
                     + "<tr> " + " <td> rew1: </td> <td>" + rew1 + "</td> " + "</tr> "
                     + "<tr> " + " <td> rew2: </td> <td>" + rew2 + "</td> " + "</tr> "
@@ -49,9 +49,9 @@ public class ReadInviteData {
                     + "</table>";
         }
     }
-    public String getDataFromURL(String fullURL) {
+    public void getDataFromURL(String fullURL) {
         encodedURL = fullURL.split("/")[fullURL.split("/").length-1];
-        return encodedURL;
+//        return encodedURL;
     }
     
     public void setEncodedURL(String encodedURL) {

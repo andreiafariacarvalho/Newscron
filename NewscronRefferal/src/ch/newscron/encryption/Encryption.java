@@ -15,59 +15,64 @@ import javax.crypto.Cipher;
 import org.apache.commons.codec.binary.Base64;
 import java.security.MessageDigest;
 import java.util.Arrays;
+import java.util.StringJoiner;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import javax.crypto.spec.IvParameterSpec;
-import org.json.simple.parser.ParseException;
 
 
 public class Encryption {
     
     private static final byte[] key = "newscron12345678".getBytes(); //Key for AES algorithm - it has to be a multiple of 16bytes
     private static final String initializationVector = "AAAAAAAAAAAAAAAA"; //needed for AES algorithm
-
+    
+    private static Cipher cipher; //describe the algorithm used for encryption
+    static {
+        try {
+            cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+        } catch (Exception e) {} 
+    }
+    
     /**
      * Given a JSONObject, it is encoded and returned as a String.
      * @param inviteData is a JSONObject having the data with the keys "custID", "rew1", "rew2" and "val"
      * @return encoded string 
      */
     public static String encode(JSONObject inviteData) {
-        return encode(inviteData, null);
+        if(checkDataValidity(inviteData)) {
+            //Create hash from inviteData fields
+            byte[] hash = createMD5Hash(inviteData);
+            
+            return encode(inviteData, Arrays.toString(hash));
+        }
         
+        return null;
     }
   
     /**
      * Given a JSONObject, and maybe an hash, it is encoded and returned as a String.
      * @param inviteData is a JSONObject having the data with the keys "custID", "rew1", "rew2" and "val"
-     * @param md5Hash is a String that substitute the hash computed using md5 algorithm, in case it is not null and not empty (it is needed to produce automatic data corrupt for tests)
+     * @param md5Hash is a String that substitute the hash computed using md5 algorithm, in case it is not null and not empty
      * @return encoded string 
      */
     protected static String encode(JSONObject inviteData, String md5Hash) {
         
-        if(checkDataValidity(inviteData)) {
-            try {
-                //Check in case we want to add a given hash (having at the end a corrupt data)
-                if(md5Hash != null && !md5Hash.equals("")) {
-                    //Add md5Hash to JSONObject
-                    inviteData.put("hash", md5Hash);
-                } else {
-                    //Create hash from inviteData fields
-                    byte[] hash = createMD5Hash(inviteData);
-
-                    //Add hash to JSONObject
-                    inviteData.put("hash", Arrays.toString(hash));
-                }
-                
-                //Encode inviteData (with hash) JSONObject
-                String params = inviteData.toString();
-                Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
-                final SecretKeySpec secretKey = new SecretKeySpec(key, "AES");
-                cipher.init(Cipher.ENCRYPT_MODE, secretKey, new IvParameterSpec(initializationVector.getBytes("UTF-8")));
-                return Base64.encodeBase64URLSafeString(cipher.doFinal(params.getBytes())); //to ensure valid URL characters
-            } catch (Exception e) {
-                return e.getMessage();
+        try {
+            //Check in case we want to add a given hash (having at the end a corrupt data)
+            if(md5Hash != null && !md5Hash.isEmpty()) {
+                //Add md5Hash to JSONObject
+                inviteData.put("hash", md5Hash);
+            } else {
+                return null;
             }
-        }
+
+            //Encode inviteData (with hash) JSONObject
+            String params = inviteData.toString();
+            final SecretKeySpec secretKey = new SecretKeySpec(key, "AES");
+            cipher.init(Cipher.ENCRYPT_MODE, secretKey, new IvParameterSpec(initializationVector.getBytes("UTF-8")));
+            return Base64.encodeBase64URLSafeString(cipher.doFinal(params.getBytes())); //to ensure valid URL characters
+        } catch (Exception e) {}
+        
         return null;
     }
 
@@ -81,7 +86,6 @@ public class Encryption {
         try {
             
             //Decode URL
-            Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
             final SecretKeySpec secretKey = new SecretKeySpec(key, "AES");
             cipher.init(Cipher.DECRYPT_MODE, secretKey, new IvParameterSpec(initializationVector.getBytes("UTF-8")));
             
@@ -99,13 +103,10 @@ public class Encryption {
 
                 if (receivedHash.equals(Arrays.toString(hashOfData))) { //Valid data
                     return receivedData.toString();
-                } else { //Corrupt data
-                    return "";
                 }
             }
-        } catch (Exception e) { //Invalid data (including encryption algorithm exceptions
-            return null;
-        }
+        } catch (Exception e) {} //Invalid data (including encryption algorithm exceptions
+        
         return null;
     }
     
@@ -116,14 +117,16 @@ public class Encryption {
      */
     public static byte[] createMD5Hash(JSONObject obj) {
         //Create a string of the fields with format: "<custID>$<rew1>$<rew2>$<val>"
-        String stringToHash = obj.get("custID").toString() + "$" +
-                                obj.get("rew1").toString() + "$" +
-                                obj.get("rew2").toString() + "$" +
-                                obj.get("val").toString();
+        StringJoiner stringToHash = new StringJoiner("$");
+        stringToHash.add((String) obj.get("custID"));
+        stringToHash.add((String) obj.get("rew1"));
+        stringToHash.add((String) obj.get("rew2"));
+        stringToHash.add((String) obj.get("val"));
+        
         //Get hash of string  
         try {
             MessageDigest m = MessageDigest.getInstance("MD5");
-            byte[] hash = m.digest(stringToHash.getBytes("UTF-8"));
+            byte[] hash = m.digest(stringToHash.toString().getBytes("UTF-8"));
             return hash;
         } catch (Exception e) {}
         
@@ -137,10 +140,10 @@ public class Encryption {
      */
     public static boolean checkDataValidity(JSONObject obj) {
         return obj != null && obj.size() == 4 && 
-                obj.get("custID") != null && obj.get("custID") != "" &&
-                obj.get("rew1") != null && obj.get("rew1") != "" &&
-                obj.get("rew2") != null && obj.get("rew2") != "" &&
-                obj.get("val") != null && obj.get("val") != "";
+                obj.get("custID") != null && !((String)obj.get("custID")).isEmpty() &&
+                obj.get("rew1") != null && !((String)obj.get("rew1")).isEmpty() &&
+                obj.get("rew2") != null && !((String)obj.get("rew2")).isEmpty() &&
+                obj.get("val") != null && !((String)obj.get("val")).isEmpty();
     }
     
 }

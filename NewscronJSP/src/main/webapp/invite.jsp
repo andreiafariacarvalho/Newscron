@@ -17,8 +17,23 @@
     </head>
     <body>
         <h1>URL handling</h1>
-        Encoded Data: <%= invite.getDataFromURL(request.getRequestURL().toString()) %> <br>
+        <% invite.getDataFromURL(request.getRequestURL().toString()); %> <br>
+        <p><u>Decoded data</u></p>
         <%= invite.parseURL() %>
-        
     </body>
+    <style>
+        h1 {
+            font-size: 100px;
+            text-align: center;
+        }
+        p {
+            font-size: 40px;
+            text-align: center;
+        }
+        table.center {
+            font-size: 30px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+    </style>
 </html>

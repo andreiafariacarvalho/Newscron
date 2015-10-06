@@ -79,6 +79,7 @@ public class EncryptionJUnitTest {
 
         // With working string
         String stringEncoded = Encryption.encode(inviteData);
+        System.out.println("String encoded: " + stringEncoded);
         String stringDecoded = Encryption.decode(stringEncoded);
         assertNotNull(stringDecoded);
 
@@ -105,7 +106,7 @@ public class EncryptionJUnitTest {
         //Send corrupt data (inviteData2) with valid hash of inviteData.
         //The hash of the corrupt data will differ from the hash of the valid data.
         String corruptEncodedURL = Encryption.encode(inviteData2, Arrays.toString(hash));
-        assertTrue(Encryption.decode(corruptEncodedURL).equals("")); //Indicating corrupt data
+        assertTrue(Encryption.decode(corruptEncodedURL) == null); //Indicating corrupt data
 
     }
 

@@ -4,11 +4,8 @@
  * and open the template in the editor.
  */
 package ch.newscron.newscronjsp;
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import ch.newscron.encryption.Encryption;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 
 /**
  *
