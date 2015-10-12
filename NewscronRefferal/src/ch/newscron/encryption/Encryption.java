@@ -10,11 +10,11 @@ package ch.newscron.encryption;
  * @author andreiafariacarvalho + dintamari
  */
 
+import java.io.UnsupportedEncodingException;
 import javax.crypto.spec.SecretKeySpec;
 import javax.crypto.Cipher;
 import org.apache.commons.codec.binary.Base64;
 import java.security.MessageDigest;
-import java.util.Arrays;
 import java.util.StringJoiner;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -38,12 +38,12 @@ public class Encryption {
      * @param inviteData is a JSONObject having the data with the keys "custID", "rew1", "rew2" and "val"
      * @return encoded string 
      */
-    public static String encode(JSONObject inviteData) {
-        if(checkDataValidity(inviteData)) {
+    public static String encode(JSONObject inviteData) throws UnsupportedEncodingException {
+        if(checkDataValidity(inviteData)) {     //NOTE: To obtain max number of available characters call the function availableParameterLength(String initialURL)
             //Create hash from inviteData fields
             byte[] hash = createMD5Hash(inviteData);
             
-            return encode(inviteData, Arrays.toString(hash));
+            return encode(inviteData, new String(hash,"UTF-8"));
         }
         
         return null;
@@ -101,7 +101,7 @@ public class Encryption {
             if(checkDataValidity(receivedData)) {
                 byte[] hashOfData = createMD5Hash(receivedData);
 
-                if (receivedHash.equals(Arrays.toString(hashOfData))) { //Valid data
+                if (receivedHash.equals(new String(hashOfData,"UTF-8"))) { //Valid data
                     return receivedData.toString();
                 }
             }
@@ -144,6 +144,46 @@ public class Encryption {
                 obj.get("rew1") != null && !((String)obj.get("rew1")).isEmpty() &&
                 obj.get("rew2") != null && !((String)obj.get("rew2")).isEmpty() &&
                 obj.get("val") != null && !((String)obj.get("val")).isEmpty();
+    }
+    
+    
+    
+    /**
+     * Computes the max number of available characters, considering the initial URL, base64, AES, MD5 hash and JSON object.
+     * !! Available characters do not include the follow special characters (which require > 1 bytes): "/", "\", """, "'" and any kind of accents!!
+     * @param initialURL ("http://domain/path")
+     * @return the max number of available characters for the four fields (customerID, reward1, reward2, validity)
+     */
+    public static Integer availableParameterLength(String initialURL) {
+        try {
+            JSONObject emptyData = new JSONObject();
+            emptyData.put("custID", "");
+            emptyData.put("rew1", "");
+            emptyData.put("rew2", "");
+            emptyData.put("val", "");
+            emptyData.put("hash", "");
+
+            //Max size of URL for Internet Explorer... :-(
+            int maxURLSize = 2000;
+
+            //Remove size of initial url (host+domain)
+            maxURLSize -= initialURL.getBytes("UTF-8").length;
+
+            //Base64 ratio of 3/4
+            maxURLSize = (int) Math.ceil((maxURLSize*3)/4);
+
+            //Maximum number of blocks available * 16
+            maxURLSize = (int) Math.floor(maxURLSize/16) * 16;
+
+            //Remove size of hash (16 bytes) and empty JSON (without fields)
+            maxURLSize -= (16 + emptyData.toJSONString().getBytes("UTF-8").length);
+
+            //Remaining number of characters available
+            return maxURLSize;
+
+        } catch (Exception e) {};
+        
+        return null;
     }
     
 }
