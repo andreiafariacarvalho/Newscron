@@ -20,6 +20,7 @@
         <% invite.getDataFromURL(request.getRequestURL().toString()); %> <br>
         <p><u>Decoded data</u></p>
         <%= invite.parseURL() %>
+        <p>Shorter URL: <br><%= invite.getShorterUrl() %></p> 
     </body>
     <style>
         h1 {

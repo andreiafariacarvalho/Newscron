@@ -6,6 +6,8 @@
 package ch.newscron.newscronjsp;
 
 import ch.newscron.encryption.Encryption;
+import ch.newscron.encryption.ShortenerUrlUtil;
+import java.io.IOException;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -60,6 +62,11 @@ public class ReadInviteData {
     
     public String getEncodedURL() {
         return encodedURL;
+    }
+    
+    
+    public String getShorterUrl() throws IOException {
+        return ShortenerUrlUtil.shortenUrl(encodedURL);
     }
     
 }
