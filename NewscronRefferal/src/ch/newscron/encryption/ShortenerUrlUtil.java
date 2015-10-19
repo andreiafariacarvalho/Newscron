@@ -44,58 +44,58 @@ public class ShortenerUrlUtil {
     public static final String GOOGLE_SHORTENER_URL = "https://www.googleapis.com/urlshortener/v1/url?key=AIzaSyDwu91R6A4EhN-NeAYWrEqecSIn_z-3tmA&shortUrl=http://goo.gl/14Gmwu&projection=FULL";
     public static final String webSite = "http://www.inf.usi.ch";
     
-//    public static Urlshortener newUrlshortener() {
-//        AppIdentityCredential credential = new AppIdentityCredential(Arrays.asList(UrlshortenerScopes.URLSHORTENER));
-//        return new Urlshortener(new UrlFetchTransport(), new JacksonFactory(), credential);
+    public static Urlshortener newUrlshortener() {
+        AppIdentityCredential credential = new AppIdentityCredential(Arrays.asList(UrlshortenerScopes.URLSHORTENER));
+        return new Urlshortener(new UrlFetchTransport(), new JacksonFactory(), credential);
 ////        return null;
-//    }
+    }
     
     public static String shortenUrl(String longUrl) throws IOException {
-//        Urlshortener shortener = null;
-//        Url toInsert = new Url().setLongUrl(longUrl);
-//        try {
-//            shortener.url().insert(toInsert).execute();
-//            return "ok";
-//        } catch (Exception e) {
-//            return "...";
-//        }
-        
-        String data = "{\"longUrl\": \"" + longUrl + "\"}";
-
+        Urlshortener shortener = null;
+        Url toInsert = new Url().setLongUrl(longUrl);
         try {
-            // creation of one HTTP connection
-            URL url = new URL(GOOGLE_SHORTENER_URL);
-
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setRequestMethod("POST");
-            connection.setDoOutput(true);
-            connection.setRequestProperty("Content-Type", "application/json");
-
-            // call API
-            OutputStreamWriter output = new OutputStreamWriter(connection.getOutputStream());
-            output.write(data);
-            output.flush();
-
-            // response in JSON format
-            BufferedReader response = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-            String result = "";
-            String line;
-            while ((line = response.readLine()) != null) {
-                result += line;
-            }
-
-            // interpretation of JSON to extract the shorter URL
-            ObjectMapper mapper = new ObjectMapper();
-            Map map = mapper.readValue(result, Map.class);
-            System.out.println(map.toString());
-
-            output.close();
-            response.close();
-
-            return (String) map.get("id");
+            shortener.url().insert(toInsert).execute();
+            return "ok";
         } catch (Exception e) {
-            return longUrl;
+            return "...";
         }
+        
+//        String data = "{\"longUrl\": \"" + longUrl + "\"}";
+//
+//        try {
+//            // creation of one HTTP connection
+//            URL url = new URL(GOOGLE_SHORTENER_URL);
+//
+//            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+//            connection.setRequestMethod("POST");
+//            connection.setDoOutput(true);
+//            connection.setRequestProperty("Content-Type", "application/json");
+//
+//            // call API
+//            OutputStreamWriter output = new OutputStreamWriter(connection.getOutputStream());
+//            output.write(data);
+//            output.flush();
+//
+//            // response in JSON format
+//            BufferedReader response = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+//            String result = "";
+//            String line;
+//            while ((line = response.readLine()) != null) {
+//                result += line;
+//            }
+//
+//            // interpretation of JSON to extract the shorter URL
+//            ObjectMapper mapper = new ObjectMapper();
+//            Map map = mapper.readValue(result, Map.class);
+//            System.out.println(map.toString());
+//
+//            output.close();
+//            response.close();
+//
+//            return (String) map.get("id");
+//        } catch (Exception e) {
+//            return longUrl;
+//        }
     }
 
     public static JSONObject getURLJSONObject() throws MalformedURLException, ProtocolException, IOException, ParseException {
@@ -135,11 +135,11 @@ public class ShortenerUrlUtil {
 //        Urlshortener shortener = null;
 //        UrlHistory history = shortener.url().list().execute();
         
-        JSONObject o1 = getURLJSONObject();
-        JSONObject o2 = (JSONObject) o1.get("analytics");
-        JSONObject o3 = (JSONObject) o2.get("allTime");
-        System.out.println(o3.get("shortUrlClicks"));
-        System.out.println(o1.toString()); // BIG QUESTION!!! JSONArray or JSONObject?!?!?!?!
+//        JSONObject o1 = getURLJSONObject();
+//        JSONObject o2 = (JSONObject) o1.get("analytics");
+//        JSONObject o3 = (JSONObject) o2.get("allTime");
+//        System.out.println(o3.get("shortUrlClicks"));
+//        System.out.println(o1.toString()); // BIG QUESTION!!! JSONArray or JSONObject?!?!?!?!
         
     }
     
