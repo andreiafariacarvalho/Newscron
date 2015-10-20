@@ -7,6 +7,7 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <jsp:useBean id="invite" class="ch.newscron.newscronjsp.ReadInviteData" scope="session"/> 
+<jsp:useBean id="statistics" class="ch.newscron.newscronjsp.shortUrlStatistics" scope="session"/> 
 <%--<jsp:setProperty name="invite" property="*"/>--%> 
 
 
@@ -17,10 +18,14 @@
     </head>
     <body>
         <h1>URL handling</h1>
-        <% invite.getDataFromURL(request.getRequestURL().toString()); %> <br>
+        <% invite.getDataFromURL(request.getRequestURL().toString()); %>
+        <p>Shorter URL: <br><a href=' <%= invite.getShorterUrl() %> '> <%= invite.getShorterUrl() %> </a> </p> 
         <p><u>Decoded data</u></p>
         <%= invite.parseURL() %>
-        <p>Shorter URL: <br><%= invite.getShorterUrl() %></p> 
+
+        
+        <p> LIST OF SHORT URLs </p>
+        <%= statistics.showStatisticsTable() %>
     </body>
     <style>
         h1 {
@@ -35,6 +40,10 @@
             font-size: 30px;
             margin-left: auto;
             margin-right: auto;
+        }
+        
+        tr {
+            text-align: center;
         }
     </style>
 </html>

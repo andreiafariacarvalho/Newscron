@@ -51,7 +51,6 @@ public class EncryptionJUnitTest {
     @Test
     public void encodeTest() throws UnsupportedEncodingException, NoSuchAlgorithmException, ParseException {
         
-        System.out.println(Encryption.availableParameterLength("http://localhost:8080/invite/"));
         //With null string
         assertNull(Encryption.encode(null));
 

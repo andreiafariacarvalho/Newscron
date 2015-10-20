@@ -9,6 +9,8 @@
 
 <!DOCTYPE html>
 <jsp:useBean id="user" class="ch.newscron.newscronjsp.UserData" scope="session"/> 
+<jsp:useBean id="statistics" class="ch.newscron.newscronjsp.shortUrlStatistics" scope="session"/> 
+
 <jsp:setProperty name="user" property="*"/> 
 
 <html>
@@ -22,8 +24,8 @@
 
         <% user.setURLtoEncode(); %>
         Data: <%= user.createJSON(user.getCustID(), user.getRew1(), user.getRew2(), user.getVal()).toString() %> <br>-->
-        <p>Invitation URL: <a href="<%=user.getFullURL()%>"> <%=user.getFullURL()%></a> </p>
-        <%--Decoded Data: <%= "http://localhost/invite/" + user.getURLDecoded()%>--%>
+        <% statistics.saveURL(user.getFullURL()); %>
+        <p>Invitation URL: <a href="<%=statistics.getShortURL()%>"> <%=statistics.getShortURL()%></a> </p>
     </body>
     <style>
         p {

@@ -22,19 +22,19 @@ import org.json.simple.parser.JSONParser;
  */
 public class ShortenerURL {
 
-    public static final String GOOGLE_SHORTENER_URL = "https://www.googleapis.com/urlshortener/v1/url";
-    public static final String GOOGLE_SHORTENER_URL_KEY = "?key=AIzaSyDwu91R6A4EhN-NeAYWrEqecSIn_z-3tmA";
-    public static final String GOOGLE_SHORTENER_URL_OPTION_shortURL = "&shortUrl=";
-    public static final String GOOGLE_SHORTENER_URL_OPTION_projection = "&projection=FULL";
+    protected static final String GOOGLE_SHORTENER_URL = "https://www.googleapis.com/urlshortener/v1/url";
+    protected static final String GOOGLE_SHORTENER_URL_KEY = "?key=AIzaSyDwu91R6A4EhN-NeAYWrEqecSIn_z-3tmA";
+    protected static final String GOOGLE_SHORTENER_URL_OPTION_shortURL = "&shortUrl=";
+    protected static final String GOOGLE_SHORTENER_URL_OPTION_projection = "&projection=FULL";
     
     /**
-     * 
-     * @param longURL
-     * @return 
+     * Given a long original URL, the function makes a request to the Google API (with key) and takes out the shortened goo.gl URL from the received JSONObject. 
+     * @param longURL is the full (domain/path/ENCODED_DATA) URL created for inviting potential members
+     * @return a String which is the goo.gl shortened URL correlated to the original long URL.
      */
-    public static String getShortenerURL(String longURL) {
-        String data = "{\"longUrl\": \"" + longURL + "\"}";
+    public static String getShortURL(String longURL) {
         try {
+            String data = "{\"longUrl\": \"" + longURL + "\"}";
             //Creation of one HTTP connection
             URL url = new URL(GOOGLE_SHORTENER_URL + GOOGLE_SHORTENER_URL_KEY);
             
@@ -71,9 +71,9 @@ public class ShortenerURL {
     }
 
     /**
-     * 
-     * @param shortURL
-     * @return 
+     * Given a shortened goo.gl URL, the function makes a request to the Google API (with key) and receives information as a response in JSONObject format. 
+     * @param shortURL is a String representing the shortened goo.gl URL
+     * @return a JSONObject consisting of all the information about the URL (including statistics)
      */
     public static JSONObject getURLJSONObject(String shortURL) {
         try {
@@ -109,31 +109,24 @@ public class ShortenerURL {
     }
     
     /**
-     * 
-     * @param shortURL
-     * @return 
+     * Given a shortened goo.gl URL, extracts the number of clicks from the analytics field of the JSONObject
+     * @param shortURL is a String representing the shortened goo.gl URL
+     * @return an int representing the number of all-time clicks of the shortened goo.gl URL
      */
-    public static int getClicksShortenerURL(String shortURL) {
+    public static int getClicksShortURL(String shortURL) {
         JSONObject objectURL = getURLJSONObject(shortURL);
         return new Integer((String)((JSONObject)((JSONObject)objectURL.get("analytics")).get("allTime")).get("shortUrlClicks"));
     }
     
     /**
-     * 
-     * @param shortURL
-     * @return 
+     * Given a shortened goo.gl URL, extracts the original long URL of the JSONObject
+     * @param shortURL is a String representing the shortened goo.gl URL
+     * @return a String representing the original URL
      */
     public static String getLongURL(String shortURL) {
         JSONObject objectURL = getURLJSONObject(shortURL);
         return (String) objectURL.get("longUrl");
     }
-    
-//    public static void main(String[] args) {
-//        String shortURL = getShortenerURL("http://www.cdt.ch");
-////        String shortURL = "http://goo.gl/14Gmwu";
-//        System.out.println(shortURL);
-//        System.out.println(getClicksShortenerURL(shortURL));
-//        System.out.println(getLongURL(shortURL));
-//    }
+
     
 }
