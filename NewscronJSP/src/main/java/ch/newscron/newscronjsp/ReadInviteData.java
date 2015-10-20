@@ -66,7 +66,7 @@ public class ReadInviteData {
     
     
     public String getShorterUrl() throws IOException {
-        return ShortenerUrlUtil.shortenUrl(encodedURL);
+        return ShortenerUrlUtil.shortenUrl("http://localhost:8080/invite/" + encodedURL);
     }
     
 }
