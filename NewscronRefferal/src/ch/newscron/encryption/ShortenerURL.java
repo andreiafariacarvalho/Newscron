@@ -6,6 +6,8 @@ import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Map;
+import java.util.Formatter;
+//import org.apache.http.HttpStatus;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -22,10 +24,11 @@ import org.json.simple.parser.JSONParser;
  */
 public class ShortenerURL {
 
-    protected static final String GOOGLE_SHORTENER_URL = "https://www.googleapis.com/urlshortener/v1/url";
-    protected static final String GOOGLE_SHORTENER_URL_KEY = "?key=AIzaSyDwu91R6A4EhN-NeAYWrEqecSIn_z-3tmA";
-    protected static final String GOOGLE_SHORTENER_URL_OPTION_shortURL = "&shortUrl=";
+    protected static final String GOOGLE_SHORTENER_URL = "https://www.googleapis.com/urlshortener/v1/url?key=%1s";
+    protected static final String GOOGLE_SHORTENER_URL_KEY = "AIzaSyDwu91R6A4EhN-NeAYWrEqecSIn_z-3tmA";
+    protected static final String GOOGLE_SHORTENER_URL_OPTION_shortURL = "&shortUrl=%1s";
     protected static final String GOOGLE_SHORTENER_URL_OPTION_projection = "&projection=FULL";
+    static String google_url = String.format(GOOGLE_SHORTENER_URL, GOOGLE_SHORTENER_URL_KEY);
     
     /**
      * Given a long original URL, the function makes a request to the Google API (with key) and takes out the shortened goo.gl URL from the received JSONObject. 
@@ -36,7 +39,7 @@ public class ShortenerURL {
         try {
             String data = "{\"longUrl\": \"" + longURL + "\"}";
             //Creation of one HTTP connection
-            URL url = new URL(GOOGLE_SHORTENER_URL + GOOGLE_SHORTENER_URL_KEY);
+            URL url = new URL(google_url);
             
             //Preparing the HTTP request
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -67,7 +70,7 @@ public class ShortenerURL {
             return (String) map.get("id"); //If everything is working, then return the shortener URL
         } catch (Exception e) {}
         
-        return longURL; //In case of errors or problems, just return the full and long URL
+        return null; //In case of errors or problems, just return the full and long URL
     }
 
     /**
@@ -78,8 +81,11 @@ public class ShortenerURL {
     public static JSONObject getURLJSONObject(String shortURL) {
         try {
             //Creation of one HTTP connection
-            URL url = new URL(GOOGLE_SHORTENER_URL + GOOGLE_SHORTENER_URL_KEY + GOOGLE_SHORTENER_URL_OPTION_shortURL + shortURL + GOOGLE_SHORTENER_URL_OPTION_projection);
+            URL url = new URL(google_url + String.format(GOOGLE_SHORTENER_URL_OPTION_shortURL, shortURL) + GOOGLE_SHORTENER_URL_OPTION_projection);
 
+            URIBuilder urlData = new URIBuilder("m");
+            
+            
             //Preparing the HTTP request
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");

@@ -53,7 +53,7 @@ public class ShortenerURLJUnitTest {
     @Test
     public void getShortURLTest() {
         
-        assertTrue(ShortenerURL.getShortURL("").equals(""));
+        assertNull(ShortenerURL.getShortURL(""));
         
         assertNotNull(shortURL);
         assertFalse(longURL.equals(shortURL));
