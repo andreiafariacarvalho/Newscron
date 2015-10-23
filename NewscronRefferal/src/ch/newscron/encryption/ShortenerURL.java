@@ -1,12 +1,16 @@
 package ch.newscron.encryption;
 
+import com.mashape.unirest.http.Unirest;
+import com.mashape.unirest.request.HttpRequest;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Map;
-import java.util.Formatter;
+//import java.util.Formatter;
+import org.apache.http.client.utils.URIBuilder;
+import org.codehaus.jackson.JsonNode;
 //import org.apache.http.HttpStatus;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.json.simple.JSONObject;
@@ -37,6 +41,7 @@ public class ShortenerURL {
      */
     public static String getShortURL(String longURL) {
         try {
+            
             String data = "{\"longUrl\": \"" + longURL + "\"}";
             //Creation of one HTTP connection
             URL url = new URL(google_url);
@@ -46,7 +51,14 @@ public class ShortenerURL {
             connection.setRequestMethod("POST");
             connection.setDoOutput(true);
             connection.setRequestProperty("Content-Type", "application/json");
+            
+            
+//            HttpRequest request = Unirest.post(url).header("accept", "application/json").body(data);
+//            HttpResponse<JsonNode> jsonResponse = request.asJson();
+////            Gson gson = new Gson();
+//            String responseJSONString = jsonResponse.getBody().toString();
 
+            
             //Call API
             OutputStreamWriter output = new OutputStreamWriter(connection.getOutputStream());
             output.write(data);
@@ -80,35 +92,20 @@ public class ShortenerURL {
      */
     public static JSONObject getURLJSONObject(String shortURL) {
         try {
-            //Creation of one HTTP connection
-            URL url = new URL(google_url + String.format(GOOGLE_SHORTENER_URL_OPTION_shortURL, shortURL) + GOOGLE_SHORTENER_URL_OPTION_projection);
-
-            URIBuilder urlData = new URIBuilder("m");
+            URIBuilder urlData = new URIBuilder(google_url);
+            urlData.addParameter("shortUrl", shortURL);
+            urlData.addParameter("projection", "FULL");
+            URL url = urlData.build().toURL();
             
-            
-            //Preparing the HTTP request
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setRequestMethod("GET");
-            connection.setRequestProperty("Content-length", "0");
-            
-            //Check status of response
-            int status = connection.getResponseCode();
-            switch (status) {
-                case 200:
-                case 201:
-                    //Response in JSON format
-                    BufferedReader response = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-                    StringBuilder sb = new StringBuilder();
-                    String line;
-                    while ((line = response.readLine()) != null) {
-                        sb.append(line);
-                    }
-                    response.close();
-                    //JSONObject returned
-                    JSONParser parser = new JSONParser();
-                    JSONObject json = (JSONObject) parser.parse(sb.toString());
-                    return json;
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode rootNode = mapper.readTree(url);
+            if(rootNode == null) {
+                return null;
             }
+            JSONParser parser = new JSONParser();
+            
+            return (JSONObject) parser.parse(rootNode.toString());
+            
         } catch(Exception e) {}
         
         return null;
