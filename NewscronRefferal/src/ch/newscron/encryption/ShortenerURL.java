@@ -1,17 +1,10 @@
 package ch.newscron.encryption;
 
+import com.mashape.unirest.http.HttpResponse;
+import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
-import com.mashape.unirest.request.HttpRequest;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.Map;
-//import java.util.Formatter;
 import org.apache.http.client.utils.URIBuilder;
-import org.codehaus.jackson.JsonNode;
-//import org.apache.http.HttpStatus;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -30,8 +23,6 @@ public class ShortenerURL {
 
     protected static final String GOOGLE_SHORTENER_URL = "https://www.googleapis.com/urlshortener/v1/url?key=%1s";
     protected static final String GOOGLE_SHORTENER_URL_KEY = "AIzaSyDwu91R6A4EhN-NeAYWrEqecSIn_z-3tmA";
-    protected static final String GOOGLE_SHORTENER_URL_OPTION_shortURL = "&shortUrl=%1s";
-    protected static final String GOOGLE_SHORTENER_URL_OPTION_projection = "&projection=FULL";
     static String google_url = String.format(GOOGLE_SHORTENER_URL, GOOGLE_SHORTENER_URL_KEY);
     
     /**
@@ -41,45 +32,14 @@ public class ShortenerURL {
      */
     public static String getShortURL(String longURL) {
         try {
+            JSONObject data = new JSONObject();
+            data.put("longUrl", longURL);
             
-            String data = "{\"longUrl\": \"" + longURL + "\"}";
-            //Creation of one HTTP connection
-            URL url = new URL(google_url);
+            // HTTP request with the result
+            HttpResponse<JsonNode> postResponse = Unirest.post(google_url).header("Content-Type", "application/json").body(data.toJSONString()).asJson();
             
-            //Preparing the HTTP request
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setRequestMethod("POST");
-            connection.setDoOutput(true);
-            connection.setRequestProperty("Content-Type", "application/json");
-            
-            
-//            HttpRequest request = Unirest.post(url).header("accept", "application/json").body(data);
-//            HttpResponse<JsonNode> jsonResponse = request.asJson();
-////            Gson gson = new Gson();
-//            String responseJSONString = jsonResponse.getBody().toString();
+            return (String) postResponse.getBody().getObject().get("id"); //If everything is working, then return the shortener URL
 
-            
-            //Call API
-            OutputStreamWriter output = new OutputStreamWriter(connection.getOutputStream());
-            output.write(data);
-            output.flush();
-
-            //Response in JSON format
-            BufferedReader response = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-            String result = "";
-            String line;
-            while ((line = response.readLine()) != null) {
-                result += line;
-            }
-
-            //Interpretation of JSON to extract the shorter URL
-            ObjectMapper mapper = new ObjectMapper();
-            Map map = mapper.readValue(result, Map.class);
-
-            output.close();
-            response.close();
-
-            return (String) map.get("id"); //If everything is working, then return the shortener URL
         } catch (Exception e) {}
         
         return null; //In case of errors or problems, just return the full and long URL
@@ -92,18 +52,21 @@ public class ShortenerURL {
      */
     public static JSONObject getURLJSONObject(String shortURL) {
         try {
+            // Creating the URL with Google API
             URIBuilder urlData = new URIBuilder(google_url);
             urlData.addParameter("shortUrl", shortURL);
             urlData.addParameter("projection", "FULL");
             URL url = urlData.build().toURL();
             
+            // Get the JSONObject format of shortURL as String
             ObjectMapper mapper = new ObjectMapper();
-            JsonNode rootNode = mapper.readTree(url);
+            org.codehaus.jackson.JsonNode rootNode = mapper.readTree(url);
             if(rootNode == null) {
                 return null;
             }
-            JSONParser parser = new JSONParser();
             
+            // Convert String response to JSONObject
+            JSONParser parser = new JSONParser();
             return (JSONObject) parser.parse(rootNode.toString());
             
         } catch(Exception e) {}
