@@ -6,6 +6,8 @@
 package ch.newscron.encryption;
 
 import java.io.UnsupportedEncodingException;
+import org.codehaus.jackson.JsonNode;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.json.simple.JSONObject;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -56,27 +58,22 @@ public class ShortenerURLJUnitTest {
         assertNull(ShortenerURL.getShortURL(""));
         
         assertNotNull(shortURL);
+        
         assertFalse(longURL.equals(shortURL));
         
         assertTrue(shortURL.substring(0,14).equals("http://goo.gl/"));
-        
-        //Test with HTTP requests/responses ?
-        
+                
     }
     
     @Test
     public void getURLJSONObjectTest() {
         assertNull(ShortenerURL.getURLJSONObject(null));
-        
-        JSONObject shortURLJSONObject = ShortenerURL.getURLJSONObject(shortURL);
-        
-        assertTrue(shortURLJSONObject.get("id").equals(shortURL));
-        
-        assertTrue(shortURLJSONObject.get("longUrl").equals(longURL));
 
-        assertTrue(shortURLJSONObject.get("kind").equals("urlshortener#url"));
+        ShortLinkStat shortURLJSONObject = ShortenerURL.getURLJSONObject(shortURL);
         
-        assertNotNull(shortURLJSONObject.get("analytics"));
+        assertTrue(shortURLJSONObject.shortUrl.equals(shortURL));
+        
+        assertTrue(shortURLJSONObject.longUrl.equals(longURL));
     }
     
     @Test
@@ -89,5 +86,48 @@ public class ShortenerURLJUnitTest {
     public void getLongURLTest() {
         
         assertTrue(ShortenerURL.getLongURL(shortURL).equals(longURL));
+    }
+    
+    @Test
+    public void setDataTest() {
+        //Create fake jsonNode for testing
+        JSONObject analytics = new JSONObject();
+        JSONObject twoHours = new JSONObject();
+        twoHours.put("shortUrlClicks", 6);
+        JSONObject day = new JSONObject();
+        day.put("shortUrlClicks", 6);
+        JSONObject week = new JSONObject();
+        week.put("shortUrlClicks", 7);
+        JSONObject month = new JSONObject();
+        month.put("shortUrlClicks", 7);
+        JSONObject allTime = new JSONObject();
+        allTime.put("shortUrlClicks", 10);
+        
+        analytics.put("twoHours", twoHours);
+        analytics.put("week", week);
+        analytics.put("month", month);
+        analytics.put("day", day);
+        analytics.put("allTime", allTime);
+        
+        JSONObject node = new JSONObject();
+        String shortUrl = "http:\\/\\/goo.gl\\/14Gmwu";
+        String longUrl = "http:\\/\\/www.newscron.com\\/invite\\/abc";
+        node.put("id", shortUrl);
+        node.put("longUrl", longUrl);
+        node.put("analytics", analytics);
+        
+        ObjectMapper mapper = new ObjectMapper(); 
+        JsonNode n = mapper.convertValue(node, JsonNode.class);
+        
+        ShortLinkStat statsObj = ShortenerURL.setData(n);
+        assertTrue(statsObj.longUrl.equals(longUrl));
+        assertTrue(statsObj.shortUrl.equals(shortUrl));
+        assertTrue(statsObj.allTimeShortClicks == 10);
+        assertTrue(statsObj.monthShortClicks == 7);
+        assertTrue(statsObj.weekShortClicks == 7);
+        assertTrue(statsObj.dayShortClicks == 6);
+        assertTrue(statsObj.twoHoursShortClicks == 6);
+
+        
     }
 }
