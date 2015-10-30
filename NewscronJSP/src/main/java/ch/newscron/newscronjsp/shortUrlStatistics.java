@@ -1,18 +1,11 @@
 package ch.newscron.newscronjsp;
 
-import ch.newscron.encryption.ShortenerURL;
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.FileWriter;
+import ch.newscron.referral.*;
+import ch.newscron.shortUrlUtils.ShortenerURL;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+import java.util.List;
+
 
 /**
  *
@@ -22,47 +15,38 @@ public class shortUrlStatistics {
     
     private String shortURL;
     
-    public void saveURL(String longURL) throws IOException {
+    public void saveURL(String custId, String longURL) throws IOException {
         shortURL = ShortenerURL.getShortURL(longURL);
-        saveToFile(shortURL);
+        insertToDatabase(custId, shortURL);
     }
     
     public String getShortURL() {
         return shortURL;
     }
     
-    public ArrayList<String> readFile() throws IOException {
-        ArrayList<String> shortURLsList = new ArrayList<>();
-        String filePath = "/Applications/NetBeans/glassfish-4.1/glassfish/domains/domain1/config/shortURLs.txt";
-        try(BufferedReader br = new BufferedReader(new FileReader(filePath))) {
-            String line;
-            while ((line = br.readLine()) != null) {
-                shortURLsList.add(line);
-            }
-        }
-        System.out.println(shortURLsList.toString());
-        return shortURLsList;
+    public List<ShortURLDataHolder> getCustIDShortURLs(String custId) {
+        int custID = Integer.parseInt(custId);
+        return ReferralManager.selectSingularCustomerShortURLs(custID);
     }
     
     
-    private void saveToFile(String shortURL) {
-        System.out.println("Saving " + shortURL + " to file " + "shortURLS.txt");
-        FileWriter fw = null;
-        try {
-            String filename= "shortURLs.txt";
-            fw = new FileWriter(filename,true); //the true will append the new data
-            fw.write(shortURL);//appends the string to the file
-            fw.write('\n');
-            fw.close();
-        } catch (IOException ex) {
-            Logger.getLogger(shortUrlStatistics.class.getName()).log(Level.SEVERE, null, ex);
+    public void insertToDatabase(String custId, String shortURL) {
+        int custID = Integer.parseInt(custId);
+        ReferralManager.insertShortURL(custID, shortURL);
+    }
+
+    public ArrayList<String> processData(List<ShortURLDataHolder> data) {
+        ArrayList<String> resultData = new ArrayList<>();
+        for (ShortURLDataHolder shortUrl : data) {
+            resultData.add(shortUrl.getShortURL());
         }
+        return resultData;
     }
     
-    
-    public String showStatisticsTable() throws IOException {
-        ArrayList<String> shortURLs = readFile();
-        String toReturn = "<table border='1' class=\"center\"> <tr> <td> shortURLs </td> <td> # of Clicks </td> </tr>";
+    public String showStatisticsTable(String custId) throws IOException {
+        ArrayList<String> shortURLs = processData(getCustIDShortURLs(custId));
+        String toReturn = "<h3> Customer ID: " + custId + "</h3>" 
+                        + "<table border='1' class=\"center\"> <tr> <td> shortURLs </td> <td> # of Clicks </td> </tr>";
         for (String shortUrl : shortURLs) {
             toReturn += "<tr> <td> <a href='" + shortUrl + "'>" + shortUrl + "</a> </td>";
             toReturn += "<td>" + ShortenerURL.getClicksShortURL(shortUrl) + "</td> </tr>";

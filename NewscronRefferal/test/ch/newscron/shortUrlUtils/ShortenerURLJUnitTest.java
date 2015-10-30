@@ -3,8 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package ch.newscron.encryption;
+package ch.newscron.shortUrlUtils;
 
+
+import ch.newscron.encryption.Encryption;
+import ch.newscron.shortUrlUtils.ShortenerURL;
+import ch.newscron.shortUrlUtils.ShortLinkStat;
 import java.io.UnsupportedEncodingException;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;

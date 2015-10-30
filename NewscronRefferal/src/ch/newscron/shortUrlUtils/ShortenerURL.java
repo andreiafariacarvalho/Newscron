@@ -1,4 +1,4 @@
-package ch.newscron.encryption;
+package ch.newscron.shortUrlUtils;
 
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.Unirest;

@@ -6,7 +6,7 @@
 package ch.newscron.newscronjsp;
 
 import ch.newscron.encryption.Encryption;
-import ch.newscron.encryption.ShortenerURL;
+import ch.newscron.shortUrlUtils.ShortenerURL;
 import java.io.IOException;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
