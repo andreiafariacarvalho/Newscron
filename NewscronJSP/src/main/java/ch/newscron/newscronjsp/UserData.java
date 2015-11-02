@@ -19,6 +19,7 @@ public class UserData {
     String rew2;
     String val;
     String urlEncoded;
+    boolean beansForm = false;
 
     public UserData() {
     }
@@ -59,8 +60,10 @@ public class UserData {
         return obj;
     }
     public void setURLtoEncode() throws Exception {
-        JSONObject fullParam = createJSON(custID, rew1, rew2, val);
-        urlEncoded = Encryption.encode(fullParam);
+        if (beansForm) {
+            JSONObject fullParam = createJSON(custID, rew1, rew2, val);
+            urlEncoded = Encryption.encode(fullParam);
+        }
     }
     
     public String getURLtoEncode() {
@@ -76,6 +79,8 @@ public class UserData {
         return "http://localhost:8080/invite/" + urlEncoded;
     }
     
-    
+    public void isLastPageBeansform(String prevPage) {
+        beansForm = prevPage.endsWith("beansform.jsp");
+    }
 
 }

@@ -28,18 +28,39 @@
         
         <p>Invitation URL: <a href="<%=statistics.getShortURL()%>"> <%=statistics.getShortURL()%></a> </p>
     </body>-->
+        
+        
     <body>
+        <% user.isLastPageBeansform(request.getHeader("Referer")); %>
+        <% statistics.isLastPageBeansform(request.getHeader("Referer")); %>
+        
+        
         <% user.setURLtoEncode(); %>
         <% statistics.saveURL(user.getCustID(), user.getFullURL()); %>
-        <%= statistics.showStatisticsTable(user.getCustID()) %>
-        <h1>Hello World!</h1>
+        
+        
+        <%= statistics.showStatisticsTable(request.getParameter("custID")) %>
     </body>
     <style>
+        h1, h3 {
+            font-size: 100px;
+            text-align: center;
+        }
         p {
             font-size: 40px;
             text-align: center;
         }
+        table.center {
+            font-size: 30px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        tr {
+            text-align: center;
+        }
     </style>
+
 </html>
 
 

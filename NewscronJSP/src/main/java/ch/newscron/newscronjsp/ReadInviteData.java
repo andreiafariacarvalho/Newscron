@@ -19,14 +19,14 @@ import org.json.simple.parser.ParseException;
 public class ReadInviteData {
     
     
-    
+    private String custID;
     String encodedURL;
     
     public ReadInviteData() {
     }
 
     public String parseURL() throws ParseException, Exception {
-        String url = Encryption.decode(encodedURL.trim());; // TODO: change the way of keeping the url (String)
+        String url = Encryption.decode(encodedURL.trim());
 
         if (url == null) {
                 return "<p> Invalid URL </p>";
@@ -38,7 +38,7 @@ public class ReadInviteData {
         else {
             JSONParser parser = new JSONParser();
             JSONObject newobj = (JSONObject) parser.parse(url);
-            String custID = newobj.get("custID").toString();
+            custID = newobj.get("custID").toString();
             String rew1 = newobj.get("rew1").toString();
             String rew2 = newobj.get("rew2").toString();
             String val = newobj.get("val").toString();
@@ -67,6 +67,10 @@ public class ReadInviteData {
     
     public String getShorterUrl() throws IOException {
         return ShortenerURL.getShortURL("http://localhost:8080/invite/" + encodedURL);
+    }
+    
+    public String getCustID() {
+        return custID;
     }
     
 }

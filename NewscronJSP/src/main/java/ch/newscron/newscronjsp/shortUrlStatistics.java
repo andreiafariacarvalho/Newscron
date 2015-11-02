@@ -14,10 +14,13 @@ import java.util.List;
 public class shortUrlStatistics {
     
     private String shortURL;
+    private boolean beansForm;
     
     public void saveURL(String custId, String longURL) throws IOException {
-        shortURL = ShortenerURL.getShortURL(longURL);
-        insertToDatabase(custId, shortURL);
+        if (beansForm) {
+            shortURL = ShortenerURL.getShortURL(longURL);
+            insertToDatabase(custId, shortURL);
+        }
     }
     
     public String getShortURL() {
@@ -44,6 +47,7 @@ public class shortUrlStatistics {
     }
     
     public String showStatisticsTable(String custId) throws IOException {
+        System.out.println("CUSTID:::: " + custId);
         ArrayList<String> shortURLs = processData(getCustIDShortURLs(custId));
         String toReturn = "<h3> Customer ID: " + custId + "</h3>" 
                         + "<table border='1' class=\"center\"> <tr> <td> shortURLs </td> <td> # of Clicks </td> </tr>";
@@ -55,6 +59,10 @@ public class shortUrlStatistics {
         return toReturn;
     }
     
-    
+        
+    public void isLastPageBeansform(String prevPage) {
+        System.out.println("PREVPAGE: " + prevPage);
+        beansForm = prevPage.endsWith("beansform.jsp");
+    }
     
 }

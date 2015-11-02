@@ -24,11 +24,10 @@
         <%= invite.parseURL() %>
 
         
-        <p> LIST OF SHORT URLs </p>
-        <%= statistics.showStatisticsTable() %>
+        <%=  statistics.showStatisticsTable(invite.getCustID()) %>
     </body>
     <style>
-        h1 {
+        h1,h3 {
             font-size: 100px;
             text-align: center;
         }
