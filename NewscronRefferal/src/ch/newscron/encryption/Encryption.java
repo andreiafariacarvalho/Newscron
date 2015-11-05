@@ -10,7 +10,6 @@ package ch.newscron.encryption;
  * @author andreiafariacarvalho + dintamari
  */
 
-import java.io.UnsupportedEncodingException;
 import javax.crypto.spec.SecretKeySpec;
 import javax.crypto.Cipher;
 import org.apache.commons.codec.binary.Base64;
@@ -38,13 +37,15 @@ public class Encryption {
      * @param inviteData is a JSONObject having the data with the keys "custID", "rew1", "rew2" and "val"
      * @return encoded string 
      */
-    public static String encode(JSONObject inviteData) throws UnsupportedEncodingException {
-        if(checkDataValidity(inviteData)) {     //NOTE: To obtain max number of available characters call the function availableParameterLength(String initialURL)
-            //Create hash from inviteData fields
-            byte[] hash = createMD5Hash(inviteData);
-            
-            return encode(inviteData, new String(hash,"UTF-8"));
-        }
+    public static String encode(JSONObject inviteData) {
+        try {
+            if(checkDataValidity(inviteData)) {     //NOTE: To obtain max number of available characters call the function availableParameterLength(String initialURL)
+                //Create hash from inviteData fields
+                byte[] hash = createMD5Hash(inviteData);
+
+                return encode(inviteData, new String(hash,"UTF-8"));
+            }
+        } catch (Exception e) {}
         
         return null;
     }

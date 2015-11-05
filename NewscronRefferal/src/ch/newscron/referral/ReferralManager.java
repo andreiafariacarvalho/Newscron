@@ -26,8 +26,8 @@ public class ReferralManager {
     //JDBC driver name and database URL construction
     private static final String JDBCDriver = "jdbc:mysql://%s:%s/%s";
     private static final String server = "localhost";
-    private static final String port = "3307";
-    private static final String database = "bla1";
+    private static final String port = "3306";
+    private static final String database = "try";
     private static final String DBurl = String.format(JDBCDriver, server, port, database);
     
     //Credentials for database
@@ -82,8 +82,6 @@ public class ReferralManager {
             ResultSet rs = null;
             query = connection.prepareStatement("SELECT * FROM ShortURL");
             rs = query.executeQuery();
-            
-//            writeResultSet(rs);
             List<ShortURLDataHolder> shortURLList = writeResultSetToList(rs);
             disconnect(connection, query, rs);
             return shortURLList;
@@ -99,7 +97,6 @@ public class ReferralManager {
      * @param CustId an int representing the unique customer id
      * @return a List of ShortURLDataHolder objects, consisting of the shortURL table entries corresponding to the given CustId 
      */
-    
     public static List<ShortURLDataHolder> selectSingularCustomerShortURLs(int CustId) {
         try {
             Connection connection = connect();
@@ -108,7 +105,6 @@ public class ReferralManager {
             query = connection.prepareStatement("SELECT * FROM ShortURL WHERE CustID = ?");
             query.setInt(1, CustId);
             rs = query.executeQuery();
-//            writeResultSet(rs);
             List<ShortURLDataHolder> shortURLList = writeResultSetToList(rs);
             disconnect(connection, query, rs);
             return shortURLList;
@@ -117,6 +113,7 @@ public class ReferralManager {
         }
         return null;
     }
+    
     /**
      * Provided a connection, statement and resultSet, closes all of these by using DbUtils
      * @param connection an open Connection to a database
@@ -126,6 +123,7 @@ public class ReferralManager {
     public static void disconnect(Connection connection, Statement statement, ResultSet resultSet) {
         DbUtils.closeQuietly(connection, statement, resultSet);
     }
+    
     /**
      * Provided a connection and statement closes all of these by using DbUtils
      * @param connection an open Connection to a database
@@ -154,22 +152,5 @@ public class ReferralManager {
         }
         
         return null;
-    }
-    
-    /**
-     * Helper function to print out database results
-     * @param resultSet 
-     */
-    private static void writeResultSet(ResultSet resultSet){
-        try {
-            while (resultSet.next()) {
-                String CustID = resultSet.getString("CustID");
-                System.out.println("CustID: " + CustID);
-                String ShortUrl = resultSet.getString("ShortUrl");
-                System.out.println("ShortUrl: " + ShortUrl);
-            }
-        } catch (SQLException ex) {
-            Logger.getLogger(ReferralManager.class.getName()).log(Level.SEVERE, null, ex);
-        }
     }
 }

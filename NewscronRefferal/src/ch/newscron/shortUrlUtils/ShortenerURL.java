@@ -3,7 +3,6 @@ package ch.newscron.shortUrlUtils;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.Unirest;
 import java.net.URL;
-import org.apache.http.HttpRequest;
 import org.apache.http.client.utils.URIBuilder;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -97,6 +96,7 @@ public class ShortenerURL {
     /**
      * Given a JsonNode, fill all fields in a new object for holding these statistics
      * @param linkData JsonNode holding all short url data received from google API
+     * @return a ShortLinkStat object having statistics
      */
     protected static ShortLinkStat setData(JsonNode linkData) {
         ShortLinkStat linkStat = new ShortLinkStat();

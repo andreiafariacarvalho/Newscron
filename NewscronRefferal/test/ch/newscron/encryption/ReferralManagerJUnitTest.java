@@ -7,12 +7,18 @@ package ch.newscron.encryption;
  */
 
 import ch.newscron.referral.ReferralManager;
+import ch.newscron.referral.ShortURLDataHolder;
+import ch.newscron.shortUrlUtils.ShortenerURL;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.json.simple.JSONObject;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -26,24 +32,39 @@ import static org.junit.Assert.*;
  */
 public class ReferralManagerJUnitTest {
     
-    ReferralManager refManager;
+    static JSONObject inviteData = new JSONObject();
+    static Connection con;
+    static String shortURL;
     
     public ReferralManagerJUnitTest() {
-
     }
     
     @BeforeClass
     public static void setUpClass() {
-        
+        inviteData.put("custID", "0");
+        inviteData.put("rew1", "40%");
+        inviteData.put("rew2", "50%");
+        inviteData.put("val", "05/10/2015");
+        String stringEncoded = Encryption.encode(inviteData);
+        String url = "app.segmento/newscron/invite/%s";
+        url = String.format(url, stringEncoded);
+        shortURL = ShortenerURL.getShortURL(url);
     }
     
     @AfterClass
-    public static void tearDownClass() {
+    public static void tearDownClass() throws SQLException {
+        // Delete inserted query
+        con = ReferralManager.connect();
+        PreparedStatement query = null;
+        query = con.prepareStatement("DELETE FROM ShortURL WHERE CustID = ? AND ShortUrl = ?");
+        query.setInt(1, Integer.parseInt((String) inviteData.get("custID")));
+        query.setString(2, shortURL);
+        query.execute();
+        ReferralManager.disconnect(con, null);
     }
     
     @Before
     public void setUp() {
-
     }
     
     @After
@@ -51,33 +72,43 @@ public class ReferralManagerJUnitTest {
     }
 
     @Test
-    public void connectTest() {
-//        Connection con = ReferralManager.connect();
-        
+    public void connectTest() throws SQLException {
+        Connection con = ReferralManager.connect();
+        assertFalse(con.isClosed());
+        con.close();
     }
      
-//    @Test
-//    public void insertShortURLTest() {
-//        
-//    }
-    
     @Test
-    public void selectAllShortURLsTest() {
+    public void databaseTest() throws SQLException {
+        con = ReferralManager.connect();
+        int numberShortURLbefore = ReferralManager.selectSingularCustomerShortURLs(Integer.parseInt((String) inviteData.get("custID"))).size();
+        ReferralManager.insertShortURL(Integer.parseInt((String) inviteData.get("custID")), shortURL);
+        ReferralManager.disconnect(con, null);
         
-    }   
-    
-    @Test
-    public void selectSingularCustomerShortURLsTest() {
+        con = ReferralManager.connect();
+        List<ShortURLDataHolder> listShortURL = ReferralManager.selectSingularCustomerShortURLs(Integer.parseInt((String) inviteData.get("custID")));
+        assertTrue(listShortURL.size() == numberShortURLbefore + 1);
+        ReferralManager.disconnect(con, null);
         
-    } 
-    
-    @Test
-    public void disconnectTest() {
-        
+        con = ReferralManager.connect();
+        PreparedStatement query = null;
+        ResultSet rs = null;
+        query = con.prepareStatement("SELECT * FROM ShortURL WHERE CustID = ? AND ShortUrl = ?");
+        query.setInt(1, Integer.parseInt((String) inviteData.get("custID")));
+        query.setString(2, shortURL);
+        rs = query.executeQuery();
+        int count = 0;
+        while (rs.next()) 
+            ++count;
+        assertTrue(count == 1);
+        ReferralManager.disconnect(con, query, rs);
     }
     
     @Test
-    public void writeResultSetToListTest() {
-        
-    }    
+    public void disconnectTest() throws SQLException {
+        con = ReferralManager.connect();
+        assertFalse(con.isClosed());
+        ReferralManager.disconnect(con, null);
+        assertTrue(con.isClosed());
+    }   
 }

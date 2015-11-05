@@ -10,10 +10,10 @@ package ch.newscron.referral;
  * @author Din
  */
 public class ShortURLDataHolder {
-    private int custID;
-    private String shortURL;
+    private final int custID;
+    private final String shortURL;
     
-    public ShortURLDataHolder(int CustID, String shortURL) {
+    public ShortURLDataHolder(int custID, String shortURL) {
         this.custID = custID;
         this.shortURL = shortURL;
     }
