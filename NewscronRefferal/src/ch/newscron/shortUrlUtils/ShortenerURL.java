@@ -65,9 +65,7 @@ public class ShortenerURL {
                 return null;
             }
             
-            
             linkStat = setData(rootNode);
-            
             return linkStat;
             
         } catch(Exception e) {}

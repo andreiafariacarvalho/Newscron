@@ -15,29 +15,13 @@
 
 <html>
     <head></head>
-<!--    <body>
-        You entered<br>
-        CustID: <%= user.getCustID() %><br>
-        Rew1: <%= user.getRew1() %><br>
-        Rew2: <%= user.getRew2() %><br>
-        Val: <%= user.getVal() %><br> <br>
 
-        <% user.setURLtoEncode(); %>
-        Data: <%= user.createJSON(user.getCustID(), user.getRew1(), user.getRew2(), user.getVal()).toString() %> <br>
-        <% statistics.saveURL(user.getCustID(), user.getFullURL()); %>
-        
-        <p>Invitation URL: <a href="<%=statistics.getShortURL()%>"> <%=statistics.getShortURL()%></a> </p>
-    </body>-->
-        
-        
     <body>
-        <% user.isLastPageBeansform(request.getHeader("Referer")); %>
-        <% statistics.isLastPageBeansform(request.getHeader("Referer")); %>
         
-        
-        <% user.setURLtoEncode(); %>
-        <% statistics.saveURL(user.getCustID(), user.getFullURL()); %>
-        
+        <% if(request.getHeader("Referer").equals("http://localhost:8080/beansform.jsp")) {
+                user.setURLtoEncode();
+                statistics.saveURL(user.getCustID(), user.getFullURL());
+        }%>
         
         <%= statistics.showStatisticsTable(request.getParameter("custID")) %>
     </body>

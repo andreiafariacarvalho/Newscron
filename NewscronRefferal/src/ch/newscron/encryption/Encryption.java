@@ -182,7 +182,7 @@ public class Encryption {
             //Remaining number of characters available
             return maxURLSize;
 
-        } catch (Exception e) {};
+        } catch (Exception e) {}
         
         return null;
     }
