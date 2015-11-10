@@ -10,11 +10,21 @@ and open the template in the editor.
 </welcome-file-list>
 <servlet>
         <servlet-name>inviteData</servlet-name>
-        <jsp-file>/invite.jsp</jsp-file>
+        <jsp-file>/registration.jsp</jsp-file>
     </servlet>
 
     <servlet-mapping>
         <servlet-name>inviteData</servlet-name>
         <url-pattern>/invite/*</url-pattern>
+    </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>decodeData</servlet-name>
+        <jsp-file>/decode.jsp</jsp-file>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>decodeData</servlet-name>
+        <url-pattern>/decode/*</url-pattern>
     </servlet-mapping>
 </web-app>

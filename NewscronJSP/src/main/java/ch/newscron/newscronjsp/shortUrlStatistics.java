@@ -43,6 +43,7 @@ public class shortUrlStatistics {
         return resultData;
     }
     
+    
     public String showStatisticsTable(String custId) throws IOException {
         System.out.println("CUSTID:::: " + custId);
         ArrayList<String> shortURLs = processData(getCustIDShortURLs(custId));
@@ -50,7 +51,10 @@ public class shortUrlStatistics {
                         + "<table border='1' class=\"center\"> <tr> <td> shortURLs </td> <td> # of Clicks </td> </tr>";
         for (String shortUrl : shortURLs) {
             toReturn += "<tr> <td> <a href='" + shortUrl + "'>" + shortUrl + "</a> </td>";
-            toReturn += "<td>" + ShortenerURL.getClicksShortURL(shortUrl) + "</td> </tr>";
+            toReturn += "<td>" + ShortenerURL.getClicksShortURL(shortUrl) + "</td>";
+            String longURL = ShortenerURL.getLongURL(shortUrl);
+            String getDataURL = "http://localhost:8080/decode/" + longURL.split("/")[longURL.split("/").length-1];
+            toReturn += "<td> <form action='" + getDataURL +  "'> <button type='submit'> Decode data </button> </form> </tr>";
         }
         toReturn += "</table>";
         return toReturn;
