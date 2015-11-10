@@ -57,18 +57,20 @@ public class ReferralManager {
      * @param CustId an int representing the unique customer id
      * @param shortURL a String representing the short goo.gl generated URL
      */
-    public static void insertShortURL(int CustId, String shortURL) {
+    public static boolean insertShortURL(int CustId, String shortURL) {
         try {
             Connection connection = connect();
             PreparedStatement query = null;
-            query = connection.prepareStatement("INSERT INTO ShortURL VALUES(?, ?)");
+            query = connection.prepareStatement("INSERT IGNORE INTO ShortURL VALUES(?, ?)");
             query.setInt(1, CustId);
             query.setString(2, shortURL);
-            query.executeUpdate();
+            int newShortURL = query.executeUpdate();
             disconnect(connection, query);
+            return newShortURL == 1;
         }  catch (Exception ex) {
             Logger.getLogger(ReferralManager.class.getName()).log(Level.SEVERE, null, ex);
         }
+        return false;
     }
     
     /**

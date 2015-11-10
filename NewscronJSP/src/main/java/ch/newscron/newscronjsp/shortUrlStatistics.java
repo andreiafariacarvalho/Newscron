@@ -30,9 +30,9 @@ public class shortUrlStatistics {
     }
     
     
-    public void insertToDatabase(String custId, String shortURL) {
+    public boolean insertToDatabase(String custId, String shortURL) {
         int custID = Integer.parseInt(custId);
-        ReferralManager.insertShortURL(custID, shortURL);
+        return ReferralManager.insertShortURL(custID, shortURL);
     }
 
     public ArrayList<String> processData(List<ShortURLDataHolder> data) {
@@ -60,4 +60,13 @@ public class shortUrlStatistics {
         return toReturn;
     }
     
+    public void insertTest(String custId) {
+        System.out.println("******************* trying *******************");
+        boolean successfulInsert = insertToDatabase(custId, shortURL);
+        if(successfulInsert) {
+            
+        } else {
+            
+        }
+    }
 }
