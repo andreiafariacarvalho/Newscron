@@ -60,13 +60,4 @@ public class shortUrlStatistics {
         return toReturn;
     }
     
-    public void insertTest(String custId) {
-        System.out.println("******************* trying *******************");
-        boolean successfulInsert = insertToDatabase(custId, shortURL);
-        if(successfulInsert) {
-            
-        } else {
-            
-        }
-    }
 }

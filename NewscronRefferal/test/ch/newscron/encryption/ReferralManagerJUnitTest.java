@@ -50,13 +50,13 @@ public class ReferralManagerJUnitTest {
     @AfterClass
     public static void tearDownClass() throws SQLException {
         // Delete inserted query
-        con = ReferralManager.connect();
-        PreparedStatement query = null;
-        query = con.prepareStatement("DELETE FROM ShortURL WHERE CustID = ? AND ShortUrl = ?");
-        query.setInt(1, Integer.parseInt((String) inviteData.get("custID")));
-        query.setString(2, shortURL);
-        query.execute();
-        ReferralManager.disconnect(con, null);
+//        con = ReferralManager.connect();
+//        PreparedStatement query = null;
+//        query = con.prepareStatement("DELETE FROM ShortURL WHERE custId= ? AND shortUrl = ?");
+//        query.setInt(1, Integer.parseInt((String) inviteData.get("custID")));
+//        query.setString(2, shortURL);
+//        query.execute();
+//        ReferralManager.disconnect(con, null);
     }
     
     @Before
@@ -78,18 +78,20 @@ public class ReferralManagerJUnitTest {
     public void databaseTest() throws SQLException {
         con = ReferralManager.connect();
         int numberShortURLbefore = ReferralManager.selectSingularCustomerShortURLs(Integer.parseInt((String) inviteData.get("custID"))).size();
-        ReferralManager.insertShortURL(Integer.parseInt((String) inviteData.get("custID")), shortURL);
+        boolean b = ReferralManager.insertShortURL(Integer.parseInt((String) inviteData.get("custID")), shortURL);
+        System.out.println("boh: " + b);
         ReferralManager.disconnect(con, null);
         
         con = ReferralManager.connect();
         List<ShortURLDataHolder> listShortURL = ReferralManager.selectSingularCustomerShortURLs(Integer.parseInt((String) inviteData.get("custID")));
+        System.out.println("after: " + listShortURL.size() + " - before: " + numberShortURLbefore);
         assertTrue(listShortURL.size() == numberShortURLbefore + 1);
         ReferralManager.disconnect(con, null);
         
         con = ReferralManager.connect();
         PreparedStatement query = null;
         ResultSet rs = null;
-        query = con.prepareStatement("SELECT * FROM ShortURL WHERE CustID = ? AND ShortUrl = ?");
+        query = con.prepareStatement("SELECT * FROM ShortURL WHERE custId = ? AND shortUrl = ?");
         query.setInt(1, Integer.parseInt((String) inviteData.get("custID")));
         query.setString(2, shortURL);
         rs = query.executeQuery();
