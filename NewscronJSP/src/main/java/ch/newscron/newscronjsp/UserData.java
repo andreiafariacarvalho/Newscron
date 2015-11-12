@@ -6,13 +6,22 @@
 package ch.newscron.newscronjsp;
 import org.json.simple.JSONObject;
 import ch.newscron.encryption.Encryption;
+import java.io.IOException;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.servlet.*;
+import javax.servlet.http.*;
 
 /**
  *
  * @author Din
  */
 
-public class UserData {
+public class UserData extends HttpServlet  {
 
     String custID;
     String rew1;
@@ -22,25 +31,38 @@ public class UserData {
 
     public UserData() {
     }
-    public void setCustID( String value )
+    
+    @Override
+     public void doGet(HttpServletRequest request,
+                    HttpServletResponse response)
+            throws ServletException, IOException
     {
-        custID = value;
-    }
-
-    public void setRew1( String value )
-    {
-        rew1 = value;
-    }
-
-    public void setRew2( String value )
-    {
-        rew2 = value;
-    }
-
-    public void setVal( String value )
-    {
-        val = value;
-    }
+        try {
+            
+            custID = request.getParameter("custID");
+            rew1 = request.getParameter("rew1");
+            rew2 = request.getParameter("rew2");
+            val = request.getParameter("val");
+            
+            setURLtoEncode();
+            shortUrlStatistics shortUrlHandler = new shortUrlStatistics();
+            shortUrlHandler.saveURL(custID, getFullURL());
+            String redirectURL = "http://localhost:8080/NextPage?custID="+custID;
+            response.sendRedirect(redirectURL);
+            
+        } catch (Exception ex) {
+            Logger.getLogger(UserData.class.getName()).log(Level.SEVERE, null, ex);
+        }
+      
+  }
+  // Method to handle POST method request.
+    @Override
+  public void doPost(HttpServletRequest request,
+                     HttpServletResponse response)
+      throws ServletException, IOException {
+     doGet(request, response);
+  }
+  
     public String getCustID() { return custID; }
 
     public String getRew1() { return rew1; }
@@ -76,5 +98,4 @@ public class UserData {
         return "http://localhost:8080/invite/" + urlEncoded;
     }
     
-
 }

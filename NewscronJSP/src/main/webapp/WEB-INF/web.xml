@@ -27,4 +27,24 @@ and open the template in the editor.
         <servlet-name>decodeData</servlet-name>
         <url-pattern>/decode/*</url-pattern>
     </servlet-mapping>
+    <servlet>
+        <servlet-name>InviteForm</servlet-name>
+        <servlet-class>ch.newscron.newscronjsp.UserData</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>InviteForm</servlet-name>
+        <url-pattern>/UserData</url-pattern>
+    </servlet-mapping>
+    
+        <servlet>
+        <servlet-name>shortURLList</servlet-name>
+        <jsp-file>/NextPage.jsp</jsp-file>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>shortURLList</servlet-name>
+        <url-pattern>/NextPage</url-pattern>
+    </servlet-mapping>
+    
 </web-app>

@@ -11,18 +11,11 @@
 <jsp:useBean id="user" class="ch.newscron.newscronjsp.UserData" scope="session"/> 
 <jsp:useBean id="statistics" class="ch.newscron.newscronjsp.shortUrlStatistics" scope="session"/> 
 
-<jsp:setProperty name="user" property="*"/> 
 
 <html>
     <head></head>
 
     <body>
-        
-        <% if(request.getHeader("Referer").equals("http://localhost:8080/beansform.jsp")) {
-                user.setURLtoEncode();
-                statistics.saveURL(user.getCustID(), user.getFullURL());
-        }%>
-        
         <%= statistics.showStatisticsTable(request.getParameter("custID")) %>
     </body>
     <style>

@@ -15,11 +15,11 @@
 <html>
 <body>
     <h1>Invite data</h1>
-    <form method=POST action="NextPage.jsp">
-        CustomerID <input type=text name=custID><br>
-        Reward1 <input type=text name=rew1><br>
-        Reward2 <input type=text name=rew2><br>
-        Validity <input type=text name=val>
+    <form method=POST action=UserData>
+        CustomerID <input type=text name="custID"><br>
+        Reward1 <input type=text name="rew1"><br>
+        Reward2 <input type=text name="rew2"><br>
+        Validity <input type=text name="val">
         <p><input type=submit name="newURL">
     </form>
 </body>

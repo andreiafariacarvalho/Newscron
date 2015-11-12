@@ -15,9 +15,9 @@ public class shortUrlStatistics {
     
     private String shortURL;
     
-    public void saveURL(String custId, String longURL) throws IOException {
+    public boolean saveURL(String custId, String longURL) throws IOException {
         shortURL = ShortenerURL.getShortURL(longURL);
-        insertToDatabase(custId, shortURL);
+        return insertToDatabase(custId, shortURL);
     }
     
     public String getShortURL() {
