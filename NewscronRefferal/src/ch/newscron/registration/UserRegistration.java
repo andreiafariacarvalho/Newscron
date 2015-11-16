@@ -24,8 +24,8 @@ public class UserRegistration {
 //JDBC driver name and database URL construction
     private static final String JDBCDriver = "jdbc:mysql://%s:%s/%s";
     private static final String server = "localhost";
-    private static final String port = "3306";
-    private static final String database = "try";
+    private static final String port = "3307";
+    private static final String database = "bla1";
     private static final String DBurl = String.format(JDBCDriver, server, port, database);
     
     //Credentials for database
@@ -76,6 +76,20 @@ public class UserRegistration {
         }
     }
     
+    public static ResultSet selectAllUsers() {
+        try {
+            Connection connection = connect();
+            PreparedStatement query = null;
+            ResultSet rs = null;
+            query = connection.prepareStatement("SELECT ShortURL.*, User.* FROM ShortURL, User WHERE User.campaignId=ShortURL.id");
+            rs = query.executeQuery();
+//            disconnect(connection, query);
+            return rs;
+        } catch (Exception ex) {
+            Logger.getLogger(UserRegistration.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
     /**
      * Provided a connection, statement and resultSet, closes all of these by using DbUtils
      * @param connection an open Connection to a database

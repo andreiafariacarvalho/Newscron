@@ -26,8 +26,8 @@ public class ReferralManager {
     //JDBC driver name and database URL construction
     private static final String JDBCDriver = "jdbc:mysql://%s:%s/%s";
     private static final String server = "localhost";
-    private static final String port = "3306";
-    private static final String database = "try";
+    private static final String port = "3307";
+    private static final String database = "bla1";
     private static final String DBurl = String.format(JDBCDriver, server, port, database);
     
     //Credentials for database
@@ -57,15 +57,12 @@ public class ReferralManager {
      * @param CustId an int representing the unique customer id
      * @param shortURL a String representing the short goo.gl generated URL
      */
-    public static boolean insertShortURL(int CustId, String shortURL) {
+    public static boolean insertShortURL(long CustId, String shortURL) {
         try {
-            System.out.println("custID - " + CustId);
-            System.out.println("shortUrl - " + shortURL);
             Connection connection = connect();
             PreparedStatement query = null;
-            query = connection.prepareStatement("INSERT IGNORE INTO ShortURL (custId, shortUrl) VALUES(?, ?)");
-            
-            query.setInt(1, CustId);
+            query = connection.prepareStatement("INSERT IGNORE INTO ShortURL VALUES(default, ?, ?)");
+            query.setLong(1, CustId);
             query.setString(2, shortURL);
             int newShortURL = query.executeUpdate();
             disconnect(connection, query);
@@ -99,16 +96,16 @@ public class ReferralManager {
     
     /**
      * Calls the database to query for all rows in ShortURL table of database in relation to CustId
-     * @param CustId an int representing the unique customer id
+     * @param CustId a long representing the unique customer id
      * @return a List of ShortURLDataHolder objects, consisting of the shortURL table entries corresponding to the given CustId 
      */
-    public static List<ShortURLDataHolder> selectSingularCustomerShortURLs(int CustId) {
+    public static List<ShortURLDataHolder> selectSingularCustomerShortURLs(long CustId) {
         try {
             Connection connection = connect();
             PreparedStatement query = null;
             ResultSet rs = null;
             query = connection.prepareStatement("SELECT * FROM ShortURL WHERE custId = ?");
-            query.setInt(1, CustId);
+            query.setLong(1, CustId);
             rs = query.executeQuery();
             List<ShortURLDataHolder> shortURLList = writeResultSetToList(rs);
             disconnect(connection, query, rs);
@@ -148,7 +145,7 @@ public class ReferralManager {
         try {
             ShortURLDataHolder newShortURL;
             while (resultSet.next()) {
-                newShortURL = new ShortURLDataHolder(Integer.parseInt(resultSet.getString("custId")), resultSet.getString("shortUrl"));
+                newShortURL = new ShortURLDataHolder(Long.parseLong(resultSet.getString("custId")), resultSet.getString("shortUrl"));
                 shortURLList.add(newShortURL);     
             }
             return shortURLList;

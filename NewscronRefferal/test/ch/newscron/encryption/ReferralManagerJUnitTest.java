@@ -50,13 +50,13 @@ public class ReferralManagerJUnitTest {
     @AfterClass
     public static void tearDownClass() throws SQLException {
         // Delete inserted query
-//        con = ReferralManager.connect();
-//        PreparedStatement query = null;
-//        query = con.prepareStatement("DELETE FROM ShortURL WHERE custId= ? AND shortUrl = ?");
-//        query.setInt(1, Integer.parseInt((String) inviteData.get("custID")));
-//        query.setString(2, shortURL);
-//        query.execute();
-//        ReferralManager.disconnect(con, null);
+        con = ReferralManager.connect();
+        PreparedStatement query = null;
+        query = con.prepareStatement("DELETE FROM ShortURL WHERE custId= ? AND shortUrl = ?");
+        query.setLong(1, Long.parseLong((String) inviteData.get("custID")));
+        query.setString(2, shortURL);
+        query.execute();
+        ReferralManager.disconnect(con, null);
     }
     
     @Before
@@ -69,7 +69,7 @@ public class ReferralManagerJUnitTest {
 
     @Test
     public void connectTest() throws SQLException {
-        Connection con = ReferralManager.connect();
+        con = ReferralManager.connect();
         assertFalse(con.isClosed());
         con.close();
     }
@@ -77,14 +77,12 @@ public class ReferralManagerJUnitTest {
     @Test
     public void databaseTest() throws SQLException {
         con = ReferralManager.connect();
-        int numberShortURLbefore = ReferralManager.selectSingularCustomerShortURLs(Integer.parseInt((String) inviteData.get("custID"))).size();
-        boolean b = ReferralManager.insertShortURL(Integer.parseInt((String) inviteData.get("custID")), shortURL);
-        System.out.println("boh: " + b);
+        int numberShortURLbefore = ReferralManager.selectSingularCustomerShortURLs(Long.parseLong((String) inviteData.get("custID"))).size();
+        boolean b = ReferralManager.insertShortURL(Long.parseLong((String) inviteData.get("custID")), shortURL);
         ReferralManager.disconnect(con, null);
         
         con = ReferralManager.connect();
-        List<ShortURLDataHolder> listShortURL = ReferralManager.selectSingularCustomerShortURLs(Integer.parseInt((String) inviteData.get("custID")));
-        System.out.println("after: " + listShortURL.size() + " - before: " + numberShortURLbefore);
+        List<ShortURLDataHolder> listShortURL = ReferralManager.selectSingularCustomerShortURLs(Long.parseLong((String) inviteData.get("custID")));
         assertTrue(listShortURL.size() == numberShortURLbefore + 1);
         ReferralManager.disconnect(con, null);
         
@@ -92,7 +90,7 @@ public class ReferralManagerJUnitTest {
         PreparedStatement query = null;
         ResultSet rs = null;
         query = con.prepareStatement("SELECT * FROM ShortURL WHERE custId = ? AND shortUrl = ?");
-        query.setInt(1, Integer.parseInt((String) inviteData.get("custID")));
+        query.setLong(1, Long.parseLong((String) inviteData.get("custID")));
         query.setString(2, shortURL);
         rs = query.executeQuery();
         int count = 0;

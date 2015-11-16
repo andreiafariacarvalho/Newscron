@@ -12,9 +12,15 @@
         <title>JSP Page</title>
     </head>
     <body>
+        <h2> Get unique shortURLs for specific user </h2>
         <form method=POST action="NextPage.jsp">
         Customer ID <input type=text name=custID><br>
         <p><input type=submit name="queryDatabase">
+        </form>        
+        <br> <br> <br>
+        <h2> Get USER database </h2>
+        <form method=POST action="showAllUserData.jsp">
+        <p><input type=submit name="queryUserDatabase">
         </form>
     </body>
 </html>

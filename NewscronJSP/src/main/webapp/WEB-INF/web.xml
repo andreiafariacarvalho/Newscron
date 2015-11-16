@@ -53,4 +53,14 @@ and open the template in the editor.
         <url-pattern>/WelcomePage/*</url-pattern>
     </servlet-mapping>
     
+    <servlet>
+        <servlet-name>UserList</servlet-name>
+        <jsp-file>/showAllUserData.jsp</jsp-file>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>UserList</servlet-name>
+        <url-pattern>/showAllUserData</url-pattern>
+    </servlet-mapping>
+    
 </web-app>
