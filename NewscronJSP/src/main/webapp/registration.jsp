@@ -18,11 +18,10 @@
     <%= reg.checkURLValidity(request.getRequestURL().toString()) %>
         
     <h1> Registration / Sign up </h1>
-    <form method=POST action="../WelcomePage.jsp">
+    <form id="formRegister" method=POST action="/WelcomePage">
     First Name <input type=text name=firstName><br>
     Last Name <input type=text name=lastName><br>
-    Email <input type=text name=emailAdd><br>
-    Password <input type=text name=passW>
+    Email <input type=text name=emailAdd>
     <p><input type=submit name="registerUser">
     </form>
     </body>

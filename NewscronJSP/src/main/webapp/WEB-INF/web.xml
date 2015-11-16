@@ -8,11 +8,10 @@ and open the template in the editor.
 <welcome-file-list>
    <welcome-file>beansform.jsp</welcome-file>
 </welcome-file-list>
-<servlet>
+    <servlet>
         <servlet-name>inviteData</servlet-name>
         <jsp-file>/registration.jsp</jsp-file>
     </servlet>
-
     <servlet-mapping>
         <servlet-name>inviteData</servlet-name>
         <url-pattern>/invite/*</url-pattern>
@@ -22,29 +21,36 @@ and open the template in the editor.
         <servlet-name>decodeData</servlet-name>
         <jsp-file>/decode.jsp</jsp-file>
     </servlet>
-
     <servlet-mapping>
         <servlet-name>decodeData</servlet-name>
         <url-pattern>/decode/*</url-pattern>
     </servlet-mapping>
+    
     <servlet>
         <servlet-name>InviteForm</servlet-name>
         <servlet-class>ch.newscron.newscronjsp.UserData</servlet-class>
     </servlet>
-
     <servlet-mapping>
         <servlet-name>InviteForm</servlet-name>
         <url-pattern>/UserData</url-pattern>
     </servlet-mapping>
     
-        <servlet>
+    <servlet>
         <servlet-name>shortURLList</servlet-name>
         <jsp-file>/NextPage.jsp</jsp-file>
     </servlet>
-
     <servlet-mapping>
         <servlet-name>shortURLList</servlet-name>
         <url-pattern>/NextPage</url-pattern>
+    </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>Registration</servlet-name>
+        <jsp-file>/WelcomePage.jsp</jsp-file>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>Registration</servlet-name>
+        <url-pattern>/WelcomePage/*</url-pattern>
     </servlet-mapping>
     
 </web-app>
