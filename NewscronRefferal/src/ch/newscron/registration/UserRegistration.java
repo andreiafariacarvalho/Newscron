@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package registration;
+package ch.newscron.registration;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -50,18 +50,25 @@ public class UserRegistration {
         return null;
     }
     
-    public static void insertUser(int custID, String name, String lastName, String email, String password, String shortURL, int totalReward) {
+    public static void insertUser(String name, String lastName, String email, String shortURL) {
         try {
             Connection connection = connect();
             PreparedStatement query = null;
-            query = connection.prepareStatement("INSERT INTO User VALUES(?,?,?,?,?,?,?)");
-            query.setInt(1, custID);
-            query.setString(2, name);
-            query.setString(3, lastName);
-            query.setString(4, email);
-            query.setString(5, password);
-            query.setString(6, shortURL);
-            query.setInt(7, totalReward);
+            ResultSet rs = null;
+            query = connection.prepareStatement("SELECT id FROM ShortURL WHERE shortUrl=?");
+            query.setString(1, shortURL);
+            rs = query.executeQuery();
+            rs.next();
+            int shortURLId = Integer.parseInt(rs.getString("id"));
+            disconnect(connection, query, rs);
+            
+            connection = connect();
+            query = null;
+            query = connection.prepareStatement("INSERT INTO User VALUES(DEFAULT, ?, ?, ?, ?)");
+            query.setString(1, name);
+            query.setString(2, lastName);
+            query.setString(3, email);
+            query.setInt(4, shortURLId);
             query.executeUpdate();
             disconnect(connection, query);
         }  catch (Exception ex) {
@@ -87,5 +94,4 @@ public class UserRegistration {
     public static void disconnect(Connection connection, Statement statement) {
         disconnect(connection, statement, null);
     }
-    
 }
