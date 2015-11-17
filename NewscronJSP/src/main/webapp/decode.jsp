@@ -7,7 +7,7 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <jsp:useBean id="invite" class="ch.newscron.newscronjsp.DecodeDataUtils" scope="session"/> 
-<jsp:useBean id="statistics" class="ch.newscron.newscronjsp.shortUrlStatistics" scope="session"/> 
+<jsp:useBean id="statistics" class="ch.newscron.newscronjsp.ShortUrlStatistics" scope="session"/> 
 <%--<jsp:setProperty name="invite" property="*"/>--%> 
 
 

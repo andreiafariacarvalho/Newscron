@@ -6,6 +6,8 @@
 package ch.newscron.newscronjsp;
 import org.json.simple.JSONObject;
 import ch.newscron.encryption.Encryption;
+import ch.newscron.referral.ReferralManager;
+import ch.newscron.shortUrlUtils.ShortenerURL;
 import java.io.IOException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -42,8 +44,7 @@ public class ShortUrlUtils extends HttpServlet  {
             val = request.getParameter("val");
             
             String urlEncoded = getURLtoEncode();
-            shortUrlStatistics shortUrlHandler = new shortUrlStatistics();
-            shortUrlHandler.saveURL(custID, "http://localhost:8080/invite/" + urlEncoded);
+            insertToDatabase(Long.parseLong(custID), "http://localhost:8080/invite/" + urlEncoded);
             String redirectURL = "http://localhost:8080/userShortUrlStats?custID="+custID;
             response.sendRedirect(redirectURL);
             
@@ -80,5 +81,10 @@ public class ShortUrlUtils extends HttpServlet  {
     private String getURLtoEncode() throws Exception {
         JSONObject fullParam = createJSON(custID, rew1, rew2, val);
         return Encryption.encode(fullParam);
+    }
+    
+    private boolean insertToDatabase(long custID, String longURL) {
+        String shortURL = ShortenerURL.getShortURL(longURL);
+        return ReferralManager.insertShortURL(custID, shortURL);
     }
 }
