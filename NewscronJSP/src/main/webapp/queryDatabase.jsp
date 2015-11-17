@@ -13,7 +13,7 @@
     </head>
     <body>
         <h2> Get unique shortURLs for specific user </h2>
-        <form method=POST action="NextPage.jsp">
+        <form method=POST action="userShortUrlStats.jsp">
         Customer ID <input type=text name=custID><br>
         <p><input type=submit name="queryDatabase">
         </form>        

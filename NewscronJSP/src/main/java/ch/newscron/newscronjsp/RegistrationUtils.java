@@ -26,16 +26,15 @@ public class RegistrationUtils {
     public RegistrationUtils() {
     }
     
-    public void setFirstName( String value )
-    {
+    public void setFirstName(String value) {
         firstName = value;
     }
-    public void setLastName( String value )
-    {
+    
+    public void setLastName(String value) {
         lastName = value;
     }
-    public void setEmailAdd( String value )
-    {
+    
+    public void setEmailAdd(String value) {
         emailAdd = value;
     }
     
@@ -46,7 +45,6 @@ public class RegistrationUtils {
     }
     
     public String checkURLValidity(String registrationURL) throws ParseException {
-        System.out.println("registrationURL : " + registrationURL);
         String encodedPart = registrationURL.split("/")[registrationURL.split("/").length-1];
         String url = Encryption.decode(encodedPart.trim());
 

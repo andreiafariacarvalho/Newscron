@@ -16,16 +16,15 @@ import org.json.simple.parser.ParseException;
  *
  * @author Din
  */
-public class ReadInviteData {
-    
+public class DecodeDataUtils {
     
     private String custID;
     String encodedURL;
     
-    public ReadInviteData() {
+    public DecodeDataUtils() {
     }
 
-    public String parseURL() throws ParseException, Exception {
+    public String showURLData() throws ParseException, Exception {
         String url = Encryption.decode(encodedURL.trim());
 
         if (url == null) {
@@ -51,19 +50,10 @@ public class ReadInviteData {
                     + "</table>";
         }
     }
-    public void getDataFromURL(String fullURL) {
+    
+    public void setUrlString(String fullURL) {
         encodedURL = fullURL.split("/")[fullURL.split("/").length-1];
-//        return encodedURL;
     }
-    
-    public void setEncodedURL(String encodedURL) {
-        this.encodedURL = encodedURL;
-    }
-    
-    public String getEncodedURL() {
-        return encodedURL;
-    }
-    
     
     public String getShorterUrl() throws IOException {
         return ShortenerURL.getShortURL("http://localhost:8080/invite/" + encodedURL);

@@ -1,5 +1,5 @@
 <%-- 
-    Document   : NextPage
+    Document   : userShortUrlStats
     Created on : Sep 25, 2015, 4:28:22 PM
     Author     : Din
 --%>
@@ -8,7 +8,6 @@
 <%@page import="ch.newscron.encryption.Encryption"%>
 
 <!DOCTYPE html>
-<jsp:useBean id="user" class="ch.newscron.newscronjsp.UserData" scope="session"/> 
 <jsp:useBean id="statistics" class="ch.newscron.newscronjsp.shortUrlStatistics" scope="session"/> 
 
 

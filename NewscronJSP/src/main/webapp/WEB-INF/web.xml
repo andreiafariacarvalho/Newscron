@@ -6,7 +6,7 @@ and open the template in the editor.
 -->
 <web-app>
 <welcome-file-list>
-   <welcome-file>beansform.jsp</welcome-file>
+   <welcome-file>shortUrlCreator.jsp</welcome-file>
 </welcome-file-list>
     <servlet>
         <servlet-name>inviteData</servlet-name>
@@ -28,20 +28,20 @@ and open the template in the editor.
     
     <servlet>
         <servlet-name>InviteForm</servlet-name>
-        <servlet-class>ch.newscron.newscronjsp.UserData</servlet-class>
+        <servlet-class>ch.newscron.newscronjsp.ShortUrlUtils</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>InviteForm</servlet-name>
-        <url-pattern>/UserData</url-pattern>
+        <url-pattern>/ShortUrlUtils</url-pattern>
     </servlet-mapping>
     
     <servlet>
         <servlet-name>shortURLList</servlet-name>
-        <jsp-file>/NextPage.jsp</jsp-file>
+        <jsp-file>/userShortUrlStats.jsp</jsp-file>
     </servlet>
     <servlet-mapping>
         <servlet-name>shortURLList</servlet-name>
-        <url-pattern>/NextPage</url-pattern>
+        <url-pattern>/userShortUrlStats</url-pattern>
     </servlet-mapping>
     
     <servlet>

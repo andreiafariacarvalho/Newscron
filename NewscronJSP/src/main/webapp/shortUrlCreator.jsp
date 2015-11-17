@@ -4,18 +4,14 @@
     Author     : Din
 --%>
 
-<%@page import="ch.newscron.newscronjsp.shortUrlStatistics"%>
-<%@page import="ch.newscron.newscronjsp.UserData"%>
+<%@page import="ch.newscron.newscronjsp.ShortUrlUtils"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
-
-<jsp:useBean id="user" class="ch.newscron.newscronjsp.UserData" scope="session"/>
-<jsp:useBean id="statistics" class="ch.newscron.newscronjsp.shortUrlStatistics" scope="session"/> 
 
 <!DOCTYPE html>
 <html>
 <body>
     <h1>Invite data</h1>
-    <form method=POST action=UserData>
+    <form method=POST action=ShortUrlUtils>
         CustomerID <input type=text name="custID"><br>
         Reward1 <input type=text name="rew1"><br>
         Reward2 <input type=text name="rew2"><br>

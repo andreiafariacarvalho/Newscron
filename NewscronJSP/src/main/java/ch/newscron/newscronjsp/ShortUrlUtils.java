@@ -10,10 +10,8 @@ import java.io.IOException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.servlet.*;
 import javax.servlet.http.*;
 
 /**
@@ -21,15 +19,14 @@ import javax.servlet.http.*;
  * @author Din
  */
 
-public class UserData extends HttpServlet  {
+public class ShortUrlUtils extends HttpServlet  {
 
     String custID;
     String rew1;
     String rew2;
     String val;
-    String urlEncoded;
 
-    public UserData() {
+    public ShortUrlUtils() {
     }
     
     @Override
@@ -44,14 +41,14 @@ public class UserData extends HttpServlet  {
             rew2 = request.getParameter("rew2");
             val = request.getParameter("val");
             
-            setURLtoEncode();
+            String urlEncoded = getURLtoEncode();
             shortUrlStatistics shortUrlHandler = new shortUrlStatistics();
-            shortUrlHandler.saveURL(custID, getFullURL());
-            String redirectURL = "http://localhost:8080/NextPage?custID="+custID;
+            shortUrlHandler.saveURL(custID, "http://localhost:8080/invite/" + urlEncoded);
+            String redirectURL = "http://localhost:8080/userShortUrlStats?custID="+custID;
             response.sendRedirect(redirectURL);
             
         } catch (Exception ex) {
-            Logger.getLogger(UserData.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ShortUrlUtils.class.getName()).log(Level.SEVERE, null, ex);
         }
       
   }
@@ -71,8 +68,7 @@ public class UserData extends HttpServlet  {
     
     public String getVal() { return val; }
 
-    
-    public JSONObject createJSON(String custID, String rew1, String rew2, String val) {
+    private JSONObject createJSON(String custID, String rew1, String rew2, String val) {
         JSONObject obj = new JSONObject();
         obj.put("custID", custID);
         obj.put("rew1", rew1);
@@ -80,22 +76,9 @@ public class UserData extends HttpServlet  {
         obj.put("val", val);
         return obj;
     }
-    public void setURLtoEncode() throws Exception {
+    
+    private String getURLtoEncode() throws Exception {
         JSONObject fullParam = createJSON(custID, rew1, rew2, val);
-        urlEncoded = Encryption.encode(fullParam);
+        return Encryption.encode(fullParam);
     }
-    
-    public String getURLtoEncode() {
-        return urlEncoded;
-    }
-    
-    public String getURLDecoded() throws Exception {
-        return Encryption.decode(urlEncoded.trim());
-    }
-    
-    
-    public String getFullURL () {
-        return "http://localhost:8080/invite/" + urlEncoded;
-    }
-    
 }
