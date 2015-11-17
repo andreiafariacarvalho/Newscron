@@ -24,8 +24,8 @@ public class UserRegistration {
     //JDBC driver name and database URL construction
     private static final String JDBCDriver = "jdbc:mysql://%s:%s/%s";
     private static final String server = "localhost";
-    private static final String port = "3306";
-    private static final String database = "try";
+    private static final String port = "3307";
+    private static final String database = "bla1";
     private static final String DBurl = String.format(JDBCDriver, server, port, database);
     
     //Credentials for database

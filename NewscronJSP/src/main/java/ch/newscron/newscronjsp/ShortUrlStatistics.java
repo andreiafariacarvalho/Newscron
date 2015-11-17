@@ -10,36 +10,14 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 
-
 /**
  *
  * @author Din
  */
-public class shortUrlStatistics {
-    
-    private String shortURL;
-    
-    public boolean saveURL(String custId, String longURL) throws IOException {
-        shortURL = ShortenerURL.getShortURL(longURL);
-        return insertToDatabase(custId, shortURL);
-    }
-    
-    public String getShortURL() {
-        return shortURL;
-    }
-    
-    public List<ShortURLDataHolder> getCustIDShortURLs(String custId) {
-        long custID = Long.parseLong(custId);
-        return ReferralManager.selectSingularCustomerShortURLs(custID);
-    }
-    
-    
-    public boolean insertToDatabase(String custId, String shortURL) {
-        long custID = Long.parseLong(custId);
-        return ReferralManager.insertShortURL(custID, shortURL);
-    }
+public class ShortUrlStatistics {
 
-    public ArrayList<String> processData(List<ShortURLDataHolder> data) {
+    public ArrayList<String> processData(String custID) {  
+        List<ShortURLDataHolder> data = ReferralManager.selectSingularCustomerShortURLs(Long.parseLong(custID));
         ArrayList<String> resultData = new ArrayList<>();
         for (ShortURLDataHolder shortUrl : data) {
             resultData.add(shortUrl.getShortURL());
@@ -47,11 +25,9 @@ public class shortUrlStatistics {
         return resultData;
     }
     
-    
-    public String showStatisticsTable(String custId) throws IOException {
-        System.out.println("CUSTID:::: " + custId);
-        ArrayList<String> shortURLs = processData(getCustIDShortURLs(custId));
-        String toReturn = "<h3> Customer ID: " + custId + "</h3>" 
+    public String showStatisticsTable(String custID) throws IOException {
+        ArrayList<String> shortURLs = processData(custID);
+        String toReturn = "<h3> Customer ID: " + custID + "</h3>" 
                         + "<table border='1' class=\"center\"> <tr> <td> shortURLs </td> <td> # of Clicks </td> </tr>";
         for (String shortUrl : shortURLs) {
             toReturn += "<tr> <td> <a href='" + shortUrl + "'>" + shortUrl + "</a> </td>";
@@ -88,12 +64,6 @@ public class shortUrlStatistics {
                 campaignId = rs.getString("campaignId");
                 invitedBy = rs.getString("custID");
                 invitationURL = rs.getString("shortURL");
-//        name = "nameEx";
-//        lastName = "lastNameEx";
-//        email = "email@example.doh";
-//        campaignId = "123";
-//        invitedBy = "Bob";
-//        invitationURL = "goo.gl.lg.oog";
 
         toReturn += "<tr> <td>" + name + "</td>";
         toReturn += "<td>" + lastName + "</td>";
