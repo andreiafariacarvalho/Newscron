@@ -5,12 +5,16 @@
  */
 package ch.newscron.registration;
 
+import ch.newscron.referral.ReferralManager;
+import ch.newscron.referral.CustomerShortURL;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.dbutils.DbUtils;
@@ -60,6 +64,7 @@ public class UserRegistration {
             rs = query.executeQuery();
             rs.next();
             int shortURLId = Integer.parseInt(rs.getString("id"));
+           
             disconnect(connection, query, rs);
             
             connection = connect();
@@ -76,15 +81,16 @@ public class UserRegistration {
         }
     }
     
-    public static ResultSet selectAllUsers() {
+    public static List<User> selectAllUsers() {
         try {
             Connection connection = connect();
             PreparedStatement query = null;
             ResultSet rs = null;
-            query = connection.prepareStatement("SELECT ShortURL.*, User.* FROM ShortURL, User WHERE User.campaignId=ShortURL.id");
+            query = connection.prepareStatement("SELECT * FROM ShortURL, User WHERE User.campaignId=ShortURL.id");
             rs = query.executeQuery();
-//            disconnect(connection, query);
-            return rs;
+            List<User> userList = writeResultSetToList(rs);
+            disconnect(connection, query, rs);
+            return userList;
         } catch (Exception ex) {
             Logger.getLogger(UserRegistration.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -109,4 +115,21 @@ public class UserRegistration {
     public static void disconnect(Connection connection, Statement statement) {
         disconnect(connection, statement, null);
     }
+    
+    private static List<User> writeResultSetToList(ResultSet resultSet) {
+        List<User> userList = new ArrayList<>(); 
+        try {
+            User newUser;
+            while (resultSet.next()) {
+                newUser = new User(resultSet.getString("name"), resultSet.getString("lastName"), resultSet.getString("email"), resultSet.getLong("campaignId"), resultSet.getString("custID"), resultSet.getString("shortURL"));
+                userList.add(newUser);     
+            }
+            return userList;
+        } catch (SQLException ex) {
+            Logger.getLogger(ReferralManager.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        return null;
+    }
+    
 }

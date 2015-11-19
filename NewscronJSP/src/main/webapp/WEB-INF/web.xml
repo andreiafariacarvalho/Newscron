@@ -6,8 +6,15 @@ and open the template in the editor.
 -->
 <web-app>
 <welcome-file-list>
-   <welcome-file>shortUrlCreator.jsp</welcome-file>
+   <welcome-file>/shortUrlCreator.jsp</welcome-file>
 </welcome-file-list>
+
+<error-page>
+    <error-code>404</error-code>
+    <location>/shortUrlCreator.jsp</location>
+</error-page>
+
+
     <servlet>
         <servlet-name>inviteData</servlet-name>
         <jsp-file>/registration.jsp</jsp-file>
@@ -28,11 +35,11 @@ and open the template in the editor.
     
     <servlet>
         <servlet-name>InviteForm</servlet-name>
-        <servlet-class>ch.newscron.newscronjsp.ShortUrlUtils</servlet-class>
+        <servlet-class>ch.newscron.newscronjsp.ShortUrlCreator</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>InviteForm</servlet-name>
-        <url-pattern>/ShortUrlUtils</url-pattern>
+        <url-pattern>/ShortUrlCreator</url-pattern>
     </servlet-mapping>
     
     <servlet>

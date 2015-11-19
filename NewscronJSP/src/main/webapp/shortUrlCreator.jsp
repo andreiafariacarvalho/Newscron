@@ -4,14 +4,13 @@
     Author     : Din
 --%>
 
-<%@page import="ch.newscron.newscronjsp.ShortUrlUtils"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 
 <!DOCTYPE html>
 <html>
 <body>
     <h1>Invite data</h1>
-    <form method=POST action=ShortUrlUtils>
+    <form method=POST action=ShortUrlCreator>
         CustomerID <input type=text name="custID"><br>
         Reward1 <input type=text name="rew1"><br>
         Reward2 <input type=text name="rew2"><br>

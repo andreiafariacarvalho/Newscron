@@ -9,11 +9,11 @@ package ch.newscron.referral;
  *
  * @author Din
  */
-public class ShortURLDataHolder {
+public class CustomerShortURL {
     private final long custID;
     private final String shortURL;
     
-    public ShortURLDataHolder(long custID, String shortURL) {
+    public CustomerShortURL(long custID, String shortURL) {
         this.custID = custID;
         this.shortURL = shortURL;
     }

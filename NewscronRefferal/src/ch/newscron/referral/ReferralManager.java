@@ -77,14 +77,14 @@ public class ReferralManager {
      * Calls the database to query for all rows in ShortURL table of database
      * @return a List of ShortURLDataHolder objects, consisting of all shortURL entries in table
      */
-    public static List<ShortURLDataHolder> selectAllShortURLs() {
+    public static List<CustomerShortURL> getAllShortURLs() {
         try {
             Connection connection = connect();
             PreparedStatement query = null;
             ResultSet rs = null;
             query = connection.prepareStatement("SELECT * FROM ShortURL");
             rs = query.executeQuery();
-            List<ShortURLDataHolder> shortURLList = writeResultSetToList(rs);
+            List<CustomerShortURL> shortURLList = writeResultSetToList(rs);
             disconnect(connection, query, rs);
             return shortURLList;
 
@@ -99,7 +99,7 @@ public class ReferralManager {
      * @param CustId a long representing the unique customer id
      * @return a List of ShortURLDataHolder objects, consisting of the shortURL table entries corresponding to the given CustId 
      */
-    public static List<ShortURLDataHolder> selectSingularCustomerShortURLs(long CustId) {
+    public static List<CustomerShortURL> getCustomerShortURLs(long CustId) {
         try {
             Connection connection = connect();
             PreparedStatement query = null;
@@ -107,14 +107,33 @@ public class ReferralManager {
             query = connection.prepareStatement("SELECT * FROM ShortURL WHERE custId = ?");
             query.setLong(1, CustId);
             rs = query.executeQuery();
-            List<ShortURLDataHolder> shortURLList = writeResultSetToList(rs);
+            List<CustomerShortURL> shortURLList = writeResultSetToList(rs);
             disconnect(connection, query, rs);
             return shortURLList;
         } catch (Exception ex) {
             Logger.getLogger(ReferralManager.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        } 
         return null;
     }
+    
+    public static int numberOfRegisteredUsers(String shortURL) {
+        try {
+            Connection connection = connect();
+            PreparedStatement query = null;
+            ResultSet rs = null;
+            query = connection.prepareStatement("SELECT COUNT(*) as total FROM User, ShortURL WHERE User.campaignId = ShortURL.id AND ShortURL.shortUrl = ?");
+            query.setString(1, shortURL);
+            rs = query.executeQuery();
+            rs.next();
+            int totalNumbUsers = Integer.parseInt(rs.getString("total"));
+            disconnect(connection, query, rs);
+            return totalNumbUsers;
+        } catch (Exception ex) {
+            Logger.getLogger(ReferralManager.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return -1;
+    }
+    
     
     /**
      * Provided a connection, statement and resultSet, closes all of these by using DbUtils
@@ -140,12 +159,12 @@ public class ReferralManager {
      * @param resultSet a ResultSet returned from a database query
      * @return a List of ShortURLDataHolder objects
      */
-    private static List<ShortURLDataHolder> writeResultSetToList(ResultSet resultSet) {
-        List<ShortURLDataHolder> shortURLList = new ArrayList<>(); 
+    private static List<CustomerShortURL> writeResultSetToList(ResultSet resultSet) {
+        List<CustomerShortURL> shortURLList = new ArrayList<>(); 
         try {
-            ShortURLDataHolder newShortURL;
+            CustomerShortURL newShortURL;
             while (resultSet.next()) {
-                newShortURL = new ShortURLDataHolder(Long.parseLong(resultSet.getString("custId")), resultSet.getString("shortUrl"));
+                newShortURL = new CustomerShortURL(Long.parseLong(resultSet.getString("custId")), resultSet.getString("shortUrl"));
                 shortURLList.add(newShortURL);     
             }
             return shortURLList;
