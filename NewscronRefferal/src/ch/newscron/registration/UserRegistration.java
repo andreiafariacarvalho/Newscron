@@ -6,7 +6,6 @@
 package ch.newscron.registration;
 
 import ch.newscron.referral.ReferralManager;
-import ch.newscron.referral.CustomerShortURL;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -56,7 +55,7 @@ public class UserRegistration {
     public static void insertUser(String name, String lastName, String email, String shortURL) {
         long shortUrlId = getShortUrlId(shortURL);
         if (shortUrlId == -1) {
-            //Handle error
+            //check if shortUrlId exists
         } else{
             registerUserByShortURL(name, lastName, email, shortUrlId);
         }
@@ -74,7 +73,6 @@ public class UserRegistration {
             rs = query.executeQuery();
             rs.next();
             long shortURLId = rs.getLong("id");           
-            disconnect(connection, query, rs);
             return shortURLId;
         }  catch (Exception ex) {
             Logger.getLogger(UserRegistration.class.getName()).log(Level.SEVERE, null, ex);
@@ -90,14 +88,12 @@ public class UserRegistration {
         ResultSet rs = null;
         try {
             connection = connect();
-            query = null;
-            query = connection.prepareStatement("INSERT INTO User VALUES(DEFAULT, ?, ?, ?, ?)");
+            query = connection.prepareStatement("INSERT INTO User (name, lastName, email, campaignId) VALUES (?, ?, ?, ?)");
             query.setString(1, name);
             query.setString(2, lastName);
             query.setString(3, email);
             query.setLong(4, shortUrlId);
             query.executeUpdate();
-            disconnect(connection, query);
         }  catch (Exception ex) {
             Logger.getLogger(UserRegistration.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
@@ -105,7 +101,7 @@ public class UserRegistration {
         }      
     }
     
-    public static List<User> selectAllUsers() {
+    public static List<User> getAllUsers() {
         Connection connection = null;
         PreparedStatement query = null;
         ResultSet rs = null;
@@ -113,8 +109,7 @@ public class UserRegistration {
             connection = connect();
             query = connection.prepareStatement("SELECT * FROM ShortURL, User WHERE User.campaignId=ShortURL.id");
             rs = query.executeQuery();
-            List<User> userList = writeResultSetToList(rs);
-            disconnect(connection, query, rs);
+            List<User> userList = parseResultSet(rs);
             return userList;
         } catch (Exception ex) {
             Logger.getLogger(UserRegistration.class.getName()).log(Level.SEVERE, null, ex);
@@ -143,12 +138,11 @@ public class UserRegistration {
         disconnect(connection, statement, null);
     }
     
-    private static List<User> writeResultSetToList(ResultSet resultSet) {
+    private static List<User> parseResultSet(ResultSet resultSet) {
         List<User> userList = new ArrayList<>(); 
-        try {
-            User newUser;
+        try {      
             while (resultSet.next()) {
-                newUser = new User(resultSet.getString("name"), resultSet.getString("lastName"), resultSet.getString("email"), resultSet.getLong("campaignId"), resultSet.getString("custID"), resultSet.getString("shortURL"));
+                User newUser = new User(resultSet.getString("name"), resultSet.getString("lastName"), resultSet.getString("email"), resultSet.getLong("campaignId"), resultSet.getString("custID"), resultSet.getString("shortURL"));
                 userList.add(newUser);     
             }
             return userList;

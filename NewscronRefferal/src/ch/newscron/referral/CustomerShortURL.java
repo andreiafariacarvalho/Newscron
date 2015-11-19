@@ -10,16 +10,16 @@ package ch.newscron.referral;
  * @author Din
  */
 public class CustomerShortURL {
-    private final long custID;
+    private final long customerId;
     private final String shortURL;
     
-    public CustomerShortURL(long custID, String shortURL) {
-        this.custID = custID;
+    public CustomerShortURL(long customerId, String shortURL) {
+        this.customerId = customerId;
         this.shortURL = shortURL;
     }
     
-    public long getCustID() {
-        return custID;
+    public long getCustomerId() {
+        return customerId;
     }
     
     public String getShortURL() {

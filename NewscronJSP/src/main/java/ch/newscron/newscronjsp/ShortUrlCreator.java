@@ -22,24 +22,24 @@ import javax.servlet.http.*;
  */
 
 public class ShortUrlCreator extends HttpServlet  {
-    
+    public static String domain = "http://localhost:8080/";
     @Override
      public void doGet(HttpServletRequest request,
                     HttpServletResponse response)
             throws ServletException, IOException
     {
         try {        
-            String custID = request.getParameter("custID"); //local...
+            String customerId = request.getParameter("customerId");
             String rew1 = request.getParameter("rew1");
             String rew2 = request.getParameter("rew2");
             String val = request.getParameter("val");
             
-            String urlEncoded = getURLtoEncode(custID, rew1, rew2, val);
+            String urlEncoded = encodeUrl(customerId, rew1, rew2, val);
             if (urlEncoded==null) {
-                response.sendRedirect("http://localhost:8080/"); 
+                response.sendRedirect(domain); 
             } else {
-            insertToDatabase(Long.parseLong(custID), "http://localhost:8080/invite/" + urlEncoded);
-            String redirectURL = "http://localhost:8080/userShortUrlStats?custID="+custID;
+            insertToDatabase(Long.parseLong(customerId), domain + "invite/" + urlEncoded);
+            String redirectURL = domain + "userShortUrlStats?customerId="+customerId;
             response.sendRedirect(redirectURL);
             }
             
@@ -56,22 +56,22 @@ public class ShortUrlCreator extends HttpServlet  {
      doGet(request, response);
   }
 
-    private JSONObject createJSON(String custID, String rew1, String rew2, String val) {
+    private JSONObject createJSON(String customerId, String rew1, String rew2, String val) {
         JSONObject obj = new JSONObject();
-        obj.put("custID", custID);
+        obj.put("custID", customerId);
         obj.put("rew1", rew1);
         obj.put("rew2", rew2);
         obj.put("val", val);
         return obj;
     }
     
-    private String getURLtoEncode(String custID, String rew1, String rew2, String val) throws Exception {
-        JSONObject fullParam = createJSON(custID, rew1, rew2, val);
+    private String encodeUrl(String customerId, String rew1, String rew2, String val) throws Exception {
+        JSONObject fullParam = createJSON(customerId, rew1, rew2, val);
         return Encryption.encode(fullParam);
     }
     
-    private boolean insertToDatabase(long custID, String longURL) {
+    private boolean insertToDatabase(long customerId, String longURL) {
         String shortURL = ShortenerURL.getShortURL(longURL);
-        return ReferralManager.insertShortURL(custID, shortURL);
+        return ReferralManager.insertShortURL(customerId, shortURL);
     }
 }

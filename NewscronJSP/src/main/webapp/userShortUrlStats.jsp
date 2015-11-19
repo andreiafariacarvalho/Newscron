@@ -15,7 +15,7 @@
     <head></head>
 
     <body>
-        <%= statistics.showStatisticsTable(request.getParameter("custID")) %>
+        <%= statistics.showStatisticsTable(request.getParameter("customerId")) %>
     </body>
     <style>
         h1, h3 {

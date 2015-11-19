@@ -53,19 +53,18 @@ public class ReferralManager {
     
     /**
      * Given a customer id and a generated short URL, inserts these two as a new row in the ShortURL table of the database
-     * @param CustId an int representing the unique customer id
+     * @param customerId an long representing the unique customer id
      * @param shortURL a String representing the short goo.gl generated URL
      */
-    public static boolean insertShortURL(long CustId, String shortURL) {
+    public static boolean insertShortURL(long customerId, String shortURL) {
         Connection connection = null;
         PreparedStatement query = null;
         try {
             connection = connect();
-            query = connection.prepareStatement("INSERT IGNORE INTO ShortURL VALUES(default, ?, ?)");
-            query.setLong(1, CustId);
+            query = connection.prepareStatement("INSERT IGNORE INTO ShortURL (custId, shortUrl) VALUES(?, ?)");
+            query.setLong(1, customerId);
             query.setString(2, shortURL);
             int newShortURL = query.executeUpdate();
-            disconnect(connection, query);
             return newShortURL == 1;
         } catch (Exception ex) {
             Logger.getLogger(ReferralManager.class.getName()).log(Level.SEVERE, null, ex);
@@ -87,8 +86,7 @@ public class ReferralManager {
             connection = connect();
             query = connection.prepareStatement("SELECT * FROM ShortURL");
             rs = query.executeQuery();
-            List<CustomerShortURL> shortURLList = writeResultSetToList(rs);
-            disconnect(connection, query, rs);
+            List<CustomerShortURL> shortURLList = parseResultSet(rs);
             return shortURLList;
         } catch (Exception ex) {
             Logger.getLogger(ReferralManager.class.getName()).log(Level.SEVERE, null, ex);
@@ -99,21 +97,20 @@ public class ReferralManager {
     }
     
     /**
-     * Calls the database to query for all rows in ShortURL table of database in relation to CustId
-     * @param CustId a long representing the unique customer id
-     * @return a List of CustomerShortURL objects, consisting of the shortURL table entries corresponding to the given CustId 
+     * Calls the database to query for all rows in ShortURL table of database in relation to customerId
+     * @param customerId a long representing the unique customer id
+     * @return a List of CustomerShortURL objects, consisting of the shortURL table entries corresponding to the given customerId 
      */
-    public static List<CustomerShortURL> getCustomerShortURLs(long CustId) {
+    public static List<CustomerShortURL> getCustomerShortURLs(long customerId) {
         Connection connection = null;
         PreparedStatement query = null;
         ResultSet rs = null;
         try {
             connection = connect();
             query = connection.prepareStatement("SELECT * FROM ShortURL WHERE custId = ?");
-            query.setLong(1, CustId);
+            query.setLong(1, customerId);
             rs = query.executeQuery();
-            List<CustomerShortURL> shortURLList = writeResultSetToList(rs);
-            disconnect(connection, query, rs);
+            List<CustomerShortURL> shortURLList = parseResultSet(rs);
             return shortURLList;
         } catch (Exception ex) {
             Logger.getLogger(ReferralManager.class.getName()).log(Level.SEVERE, null, ex);
@@ -133,8 +130,7 @@ public class ReferralManager {
             query.setString(1, shortURL);
             rs = query.executeQuery();
             rs.next();
-            int totalNumbUsers = Integer.parseInt(rs.getString("total"));
-            disconnect(connection, query, rs);
+            int totalNumbUsers = rs.getInt("total");
             return totalNumbUsers;
         } catch (Exception ex) {
             Logger.getLogger(ReferralManager.class.getName()).log(Level.SEVERE, null, ex);
@@ -168,12 +164,11 @@ public class ReferralManager {
      * @param resultSet a ResultSet returned from a database query
      * @return a List of CustomerShortURL objects
      */
-    private static List<CustomerShortURL> writeResultSetToList(ResultSet resultSet) {
+    private static List<CustomerShortURL> parseResultSet(ResultSet resultSet) {
         List<CustomerShortURL> shortURLList = new ArrayList<>(); 
         try {
-            CustomerShortURL newShortURL;
             while (resultSet.next()) {
-                newShortURL = new CustomerShortURL(Long.parseLong(resultSet.getString("custId")), resultSet.getString("shortUrl"));
+                CustomerShortURL newShortURL = new CustomerShortURL(Long.parseLong(resultSet.getString("custId")), resultSet.getString("shortUrl"));
                 shortURLList.add(newShortURL);     
             }
             return shortURLList;

@@ -18,7 +18,8 @@ import ch.newscron.shortUrlUtils.ShortenerURL;
  * @author Din
  */
 public class RegistrationUtils {
-    
+    public static String domain = "http://localhost:8080/";
+
     String firstName;
     String lastName;
     String emailAdd;
@@ -40,7 +41,7 @@ public class RegistrationUtils {
     
     public void insertUser(String prevURL) {
         String longURL = prevURL.split("/")[prevURL.split("/").length-1];
-        String shortURL = ShortenerURL.getShortURL("http://localhost:8080/invite/" + longURL);
+        String shortURL = ShortenerURL.getShortURL(domain + "invite/" + longURL);
         UserRegistration.insertUser(firstName, lastName, emailAdd, shortURL);
     }
     

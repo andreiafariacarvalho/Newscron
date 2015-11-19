@@ -18,8 +18,9 @@ import org.json.simple.parser.ParseException;
  */
 public class DecodeDataUtils {
     
-    private String custID;
+    private String customerId;
     String encodedURL;
+    public static String domain = "http://localhost:8080/";
     
     public DecodeDataUtils() {
     }
@@ -37,13 +38,13 @@ public class DecodeDataUtils {
         else {
             JSONParser parser = new JSONParser();
             JSONObject newobj = (JSONObject) parser.parse(url);
-            custID = newobj.get("custID").toString();
+            customerId = newobj.get("custID").toString();
             String rew1 = newobj.get("rew1").toString();
             String rew2 = newobj.get("rew2").toString();
             String val = newobj.get("val").toString();
 
             return "<table border='0' class=\"center\"> "
-                    + "<tr> " + " <td> custID: </td> <td>" + custID + "</td> " + "</tr> "
+                    + "<tr> " + " <td> custID: </td> <td>" + customerId + "</td> " + "</tr> "
                     + "<tr> " + " <td> rew1: </td> <td>" + rew1 + "</td> " + "</tr> "
                     + "<tr> " + " <td> rew2: </td> <td>" + rew2 + "</td> " + "</tr> "
                     + "<tr> " + " <td> val: </td> <td>" + val + "</td> " + "</tr> "
@@ -56,11 +57,11 @@ public class DecodeDataUtils {
     }
     
     public String getShorterUrl() throws IOException {
-        return ShortenerURL.getShortURL("http://localhost:8080/invite/" + encodedURL);
+        return ShortenerURL.getShortURL(domain + "invite/" + encodedURL);
     }
     
-    public String getCustID() {
-        return custID;
+    public String getCustomerId() {
+        return customerId;
     }
     
 }
