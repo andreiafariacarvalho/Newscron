@@ -42,7 +42,6 @@ public class UserRegistration {
      */
     public static Connection connect() {
         try {
-            System.out.println("DBurl: " + DBurl);
             Class.forName("com.mysql.jdbc.Driver").newInstance(); 
             Connection connection = DriverManager.getConnection(DBurl, username, password);
             return connection;
@@ -55,37 +54,63 @@ public class UserRegistration {
     }
     
     public static void insertUser(String name, String lastName, String email, String shortURL) {
+        long shortUrlId = getShortUrlId(shortURL);
+        if (shortUrlId == -1) {
+            //Handle error
+        } else{
+            registerUserByShortURL(name, lastName, email, shortUrlId);
+        }
+        
+    }
+    
+    public static long getShortUrlId(String shortURL) {
+        Connection connection = null;
+        PreparedStatement query = null;
+        ResultSet rs = null;
         try {
-            Connection connection = connect();
-            PreparedStatement query = null;
-            ResultSet rs = null;
+            connection = connect();
             query = connection.prepareStatement("SELECT id FROM ShortURL WHERE shortUrl=?");
             query.setString(1, shortURL);
             rs = query.executeQuery();
             rs.next();
-            int shortURLId = Integer.parseInt(rs.getString("id"));
-           
+            long shortURLId = rs.getLong("id");           
             disconnect(connection, query, rs);
-            
+            return shortURLId;
+        }  catch (Exception ex) {
+            Logger.getLogger(UserRegistration.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            disconnect(connection, query, rs);
+        }  
+        return -1;
+    }
+    
+    public static void registerUserByShortURL(String name, String lastName, String email, long shortUrlId) {
+        Connection connection = null;
+        PreparedStatement query = null;
+        ResultSet rs = null;
+        try {
             connection = connect();
             query = null;
             query = connection.prepareStatement("INSERT INTO User VALUES(DEFAULT, ?, ?, ?, ?)");
             query.setString(1, name);
             query.setString(2, lastName);
             query.setString(3, email);
-            query.setInt(4, shortURLId);
+            query.setLong(4, shortUrlId);
             query.executeUpdate();
             disconnect(connection, query);
         }  catch (Exception ex) {
             Logger.getLogger(UserRegistration.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        } finally {
+            disconnect(connection, query, rs);
+        }      
     }
     
     public static List<User> selectAllUsers() {
+        Connection connection = null;
+        PreparedStatement query = null;
+        ResultSet rs = null;
         try {
-            Connection connection = connect();
-            PreparedStatement query = null;
-            ResultSet rs = null;
+            connection = connect();
             query = connection.prepareStatement("SELECT * FROM ShortURL, User WHERE User.campaignId=ShortURL.id");
             rs = query.executeQuery();
             List<User> userList = writeResultSetToList(rs);
@@ -93,6 +118,8 @@ public class UserRegistration {
             return userList;
         } catch (Exception ex) {
             Logger.getLogger(UserRegistration.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            disconnect(connection, query, rs);
         }
         return null;
     }
