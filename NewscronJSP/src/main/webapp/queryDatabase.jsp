@@ -17,7 +17,7 @@
         Customer ID <input type=text name=customerId><br>
         <p><input type=submit name="queryDatabase">
         </form>        
-        <br> <br> <br>
+        <br> <br> <hr> <br> <br>
         <h2> Get USER database </h2>
         <form method=POST action="showAllUserData.jsp">
         <p><input type=submit name="queryUserDatabase">

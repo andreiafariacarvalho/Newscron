@@ -61,7 +61,7 @@ public class RegistrationUtils {
             JSONParser parser = new JSONParser();
             JSONObject newobj = (JSONObject) parser.parse(url);
             String val = newobj.get("val").toString();
-            return "<p> URL valid until: " + val + " </p>";
+            return "<p> [URL valid until: " + val + " ]</p>";
         }
     }
 }

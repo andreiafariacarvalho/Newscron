@@ -14,10 +14,11 @@
         <title>JSP page</title>
     </head>
     <body>
-    
+     <h1> ------ Newscron Registration / Sign up ------ </h1>
+   
     <%= reg.checkURLValidity(request.getRequestURL().toString()) %>
+    <br> <br>
         
-    <h1> Registration / Sign up </h1>
     <form id="formRegister" method=POST action="/WelcomePage">
     First Name <input type=text name=firstName><br>
     Last Name <input type=text name=lastName><br>
@@ -25,4 +26,30 @@
     <p><input type=submit name="registerUser">
     </form>
     </body>
+    <style>
+    body {
+        font-size: 40px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    h1 {
+        font-size: 60px;
+        text-align: center;
+    }
+    form {
+        width: 400px;
+        margin: 0 auto;
+        text-align: center;
+    }
+    p {
+        width: 100%;
+        margin: 0 auto;
+        text-align: center;
+    }
+    input {
+        font-size: 30px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+</style>
 </html>

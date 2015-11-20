@@ -39,9 +39,10 @@ public class ShortUrlStatistics {
         
         String toReturn = "<h3> All Users </h3>" 
                         + "<table border='1' class=\"center\"> "
-                        + "<tr> <td colspan='4'> User Table </td> <td class='red' colspan='2'> ShortURL Table </td> </tr>"
+                        + "<tr> <td colspan='4'> User Table </td> <td class='red' colspan='3'> ShortURL Table </td> </tr>"
                         + "<tr> <th> Name </th> <th> Last Name </th>"
-                        + "<th> email </th> <th> campaignId </th> <th class='red'> invitedBy </th> <th class='red'> invitationURL </th> </tr>";
+                        + "<th> email </th> <th> campaignId </th> "
+                        + "<th class='red'> invitedBy </th> <th class='red'> invitationURL </th> </tr>";
         
         for (User user : userList) {
             toReturn += "<tr> <td>" + user.getFirstName() + "</td>";

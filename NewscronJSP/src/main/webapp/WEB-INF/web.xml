@@ -70,4 +70,13 @@ and open the template in the editor.
         <url-pattern>/showAllUserData</url-pattern>
     </servlet-mapping>
     
+    <servlet>
+        <servlet-name>ReferralServlet</servlet-name>
+        <servlet-class>ch.newscron.newscronjsp.ReferralSignUpServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ReferralServlet</servlet-name>
+        <url-pattern>/referral/*</url-pattern>
+    </servlet-mapping>
+    
 </web-app>

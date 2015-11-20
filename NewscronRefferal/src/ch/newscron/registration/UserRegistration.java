@@ -110,6 +110,7 @@ public class UserRegistration {
             query = connection.prepareStatement("SELECT * FROM ShortURL, User WHERE User.campaignId=ShortURL.id");
             rs = query.executeQuery();
             List<User> userList = parseResultSet(rs);
+
             return userList;
         } catch (Exception ex) {
             Logger.getLogger(UserRegistration.class.getName()).log(Level.SEVERE, null, ex);
