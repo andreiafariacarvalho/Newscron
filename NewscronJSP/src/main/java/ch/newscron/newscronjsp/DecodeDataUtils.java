@@ -57,7 +57,7 @@ public class DecodeDataUtils {
     }
     
     public String getShorterUrl() throws IOException {
-        return ShortenerURL.getShortURL(domain + "invite/" + encodedURL);
+        return ShortenerURL.getShortURL(domain + "referral/" + encodedURL);
     }
     
     public String getCustomerId() {

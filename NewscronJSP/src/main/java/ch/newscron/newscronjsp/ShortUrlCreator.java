@@ -38,7 +38,7 @@ public class ShortUrlCreator extends HttpServlet  {
             if (urlEncoded==null) {
                 response.sendRedirect(domain); 
             } else {
-            insertToDatabase(Long.parseLong(customerId), domain + "invite/" + urlEncoded);
+            insertToDatabase(Long.parseLong(customerId), domain + "referral/" + urlEncoded);
             String redirectURL = domain + "userShortUrlStats?customerId="+customerId;
             response.sendRedirect(redirectURL);
             }

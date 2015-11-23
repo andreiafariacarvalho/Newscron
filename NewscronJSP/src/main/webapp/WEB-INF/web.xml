@@ -21,7 +21,7 @@ and open the template in the editor.
     </servlet>
     <servlet-mapping>
         <servlet-name>inviteData</servlet-name>
-        <url-pattern>/invite/*</url-pattern>
+        <url-pattern>/sign_up/*</url-pattern>
     </servlet-mapping>
     
     <servlet>

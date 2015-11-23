@@ -6,6 +6,10 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import ch.newscron.registration.UserRegistration;
 import ch.newscron.shortUrlUtils.ShortenerURL;
+import java.io.UnsupportedEncodingException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.apache.commons.codec.binary.Base64;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -40,21 +44,21 @@ public class RegistrationUtils {
     }
     
     public void insertUser(String prevURL) {
-        String longURL = prevURL.split("/")[prevURL.split("/").length-1];
-        String shortURL = ShortenerURL.getShortURL(domain + "invite/" + longURL);
+        String longURL = prevURL.split("/")[4];
+        String shortURL = ShortenerURL.getShortURL(domain + "referral/" + longURL);
         UserRegistration.insertUser(firstName, lastName, emailAdd, shortURL);
     }
     
     public String checkURLValidity(String registrationURL) throws ParseException {
-        String encodedPart = registrationURL.split("/")[registrationURL.split("/").length-1];
+        String encodedPart = registrationURL.split("/")[4];
         String url = Encryption.decode(encodedPart.trim());
 
         if (url == null) {
-                return "<p> Invalid URL </p>";
+            return "<p> Invalid URL </p>";
         }
         
         else if (url.equals("")) {
-                return "<p> Corrupt URL - invalid data! </p>";
+            return "<p> Corrupt URL - invalid data! </p>";
         }
         
         else { //url is not corrupt - check date validity
@@ -63,5 +67,25 @@ public class RegistrationUtils {
             String val = newobj.get("val").toString();
             return "<p> [URL valid until: " + val + " ]</p>";
         }
+    }
+    
+    public String getReward(String prevURL) {
+        String[] urlParts = prevURL.split("/"); 
+        if(urlParts.length >= 6) {
+            try {
+                return new String(Base64.decodeBase64((urlParts[5]).getBytes()),"UTF-8");
+            } catch (UnsupportedEncodingException ex) {
+                Logger.getLogger(RegistrationUtils.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        return " - ";
+    }
+    
+    public String getEncodedData(String prevURL) {
+        String[] urlParts = prevURL.split("/"); 
+        if(urlParts.length >= 5) {
+            return urlParts[4];
+        }
+        return null;
     }
 }
