@@ -7,7 +7,7 @@ package ch.newscron.encryption;
  */
 
 import ch.newscron.referral.ReferralManager;
-import ch.newscron.referral.ShortURLDataHolder;
+import ch.newscron.referral.CustomerShortURL;
 import ch.newscron.shortUrlUtils.ShortenerURL;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -77,12 +77,12 @@ public class ReferralManagerJUnitTest {
     @Test
     public void databaseTest() throws SQLException {
         con = ReferralManager.connect();
-        int numberShortURLbefore = ReferralManager.selectSingularCustomerShortURLs(Long.parseLong((String) inviteData.get("custID"))).size();
+        int numberShortURLbefore = ReferralManager.getCustomerShortURLs(Long.parseLong((String) inviteData.get("custID"))).size();
         boolean b = ReferralManager.insertShortURL(Long.parseLong((String) inviteData.get("custID")), shortURL);
         ReferralManager.disconnect(con, null);
         
         con = ReferralManager.connect();
-        List<ShortURLDataHolder> listShortURL = ReferralManager.selectSingularCustomerShortURLs(Long.parseLong((String) inviteData.get("custID")));
+        List<CustomerShortURL> listShortURL = ReferralManager.getCustomerShortURLs(Long.parseLong((String) inviteData.get("custID")));
         assertTrue(listShortURL.size() == numberShortURLbefore + 1);
         ReferralManager.disconnect(con, null);
         
