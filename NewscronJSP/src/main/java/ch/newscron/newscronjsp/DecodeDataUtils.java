@@ -5,9 +5,12 @@
  */
 package ch.newscron.newscronjsp;
 
+import ch.newscron.encryption.CouponData;
 import ch.newscron.encryption.Encryption;
 import ch.newscron.referralUrlUtils.ShortenerURL;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -21,12 +24,13 @@ public class DecodeDataUtils {
     private String userId;
     String encodedURL;
     public static String domain = "http://localhost:8080/";
+    private static final DateFormat valDateFormat = new SimpleDateFormat("dd.MM.yy"); // Format of the date used to store the validity
     
     public DecodeDataUtils() {
     }
 
     public String showURLData() throws ParseException, Exception {
-        String url = Encryption.decode(encodedURL.trim());
+        CouponData url = Encryption.decode(encodedURL.trim());
 
         if (url == null) {
                 return "<p> Invalid URL </p>";
@@ -36,18 +40,11 @@ public class DecodeDataUtils {
                 return "<p> Corrupt URL - invalid data! </p>";
         }
         else {
-            JSONParser parser = new JSONParser();
-            JSONObject newobj = (JSONObject) parser.parse(url);
-            userId = newobj.get("userId").toString();
-            String rew1 = newobj.get("rew1").toString();
-            String rew2 = newobj.get("rew2").toString();
-            String val = newobj.get("val").toString();
-
             return "<table border='0' class=\"center\"> "
                     + "<tr> " + " <td> userId: </td> <td>" + userId + "</td> " + "</tr> "
-                    + "<tr> " + " <td> rew1: </td> <td>" + rew1 + "</td> " + "</tr> "
-                    + "<tr> " + " <td> rew2: </td> <td>" + rew2 + "</td> " + "</tr> "
-                    + "<tr> " + " <td> val: </td> <td>" + val + "</td> " + "</tr> "
+                    + "<tr> " + " <td> rew1: </td> <td>" + url.getRew1() + "</td> " + "</tr> "
+                    + "<tr> " + " <td> rew2: </td> <td>" + url.getRew2() + "</td> " + "</tr> "
+                    + "<tr> " + " <td> val: </td> <td>" + valDateFormat.format(url.getVal()) + "</td> " + "</tr> "
                     + "</table>";
         }
     }

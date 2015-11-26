@@ -9,6 +9,8 @@ import ch.newscron.encryption.Encryption;
 import ch.newscron.referral.ReferralManager;
 import ch.newscron.referralUrlUtils.ShortenerURL;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -23,6 +25,8 @@ import javax.servlet.http.*;
 
 public class ReferralURLCreator extends HttpServlet  {
     public static String domain = "http://localhost:8080/";
+    private static final DateFormat valDateFormat = new SimpleDateFormat("dd.MM.yy"); // Format of the date used to store the validity
+
     @Override
      public void doGet(HttpServletRequest request,
                     HttpServletResponse response)
@@ -66,8 +70,7 @@ public class ReferralURLCreator extends HttpServlet  {
     }
     
     private String encodeUrl(String userId, String rew1, String rew2, String val) throws Exception {
-        JSONObject fullParam = createJSON(userId, rew1, rew2, val);
-        return Encryption.encode(fullParam);
+        return Encryption.encode(Long.parseLong(userId), rew1, rew2, valDateFormat.parse(val));
     }
     
     private boolean insertToDatabase(long userId, String longURL) {

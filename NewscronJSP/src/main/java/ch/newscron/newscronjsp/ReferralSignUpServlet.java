@@ -4,10 +4,10 @@
  * and open the template in the editor.
  */
 package ch.newscron.newscronjsp;
-import org.json.simple.JSONObject;
+import ch.newscron.encryption.CouponData;
 import ch.newscron.encryption.Encryption;
 import java.io.IOException;
-import java.text.ParseException;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import javax.servlet.ServletException;
@@ -16,7 +16,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.http.*;
-import org.json.simple.parser.JSONParser;
 import org.apache.commons.codec.binary.Base64;
 
 
@@ -29,6 +28,8 @@ public class ReferralSignUpServlet extends HttpServlet  {
     private static final String domain = "http://localhost:8080/%s";
     private static final String path = "sign_up/";
     private static String signupPage = String.format(domain, path);
+    private static final DateFormat valDateFormat = new SimpleDateFormat("dd.MM.yy"); // Format of the date used to store the validity
+
     
     @Override
      public void doGet(HttpServletRequest request,
@@ -40,15 +41,13 @@ public class ReferralSignUpServlet extends HttpServlet  {
             String[] urlPartsPath = request.getRequestURI().split("/"); 
             String encodedDataString = urlPartsPath[urlPartsPath.length-1];
             
-            String decodedDataString = Encryption.decode(encodedDataString);
+            CouponData decodedDataObject = Encryption.decode(encodedDataString);
             
-            if(decodedDataString != null) {
-                JSONParser parser = new JSONParser();
-                JSONObject decodedJSON = (JSONObject) parser.parse(decodedDataString);
+            if(decodedDataObject != null) {
 
-                String dateValidity = (String) decodedJSON.get("val");
-                if(isDateValid(dateValidity)) { // Date validity not expired & not null from decoding URL
-                    String rewardNewUser = (String) decodedJSON.get("rew2");
+                Date dateValidity = decodedDataObject.getVal();
+                if(dateValidity.after(new Date())) { // Date validity not expired & not null from decoding URL
+                    String rewardNewUser = (String) decodedDataObject.getRew2();
                     String signupPageReferral = "%s/%s";
                     signupPageReferral = String.format(signupPageReferral, encodedDataString, Base64.encodeBase64URLSafeString(rewardNewUser.getBytes()));
                     signupPage += signupPageReferral;
@@ -60,20 +59,6 @@ public class ReferralSignUpServlet extends HttpServlet  {
         } finally {
             response.sendRedirect(signupPage);
         }
-    }
-
-    private static boolean isDateValid(String dateValidity) {
-        try {
-            //datevalidity format assumption: dd.mm.yy
-            Date referralDate = new SimpleDateFormat("dd.MM.yy").parse(dateValidity);
-            Date today = new Date();
-            if(today.before(referralDate)) {
-                return true;
-            }
-        } catch (ParseException ex) {
-            Logger.getLogger(ReferralSignUpServlet.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return false;
     }
 
 }

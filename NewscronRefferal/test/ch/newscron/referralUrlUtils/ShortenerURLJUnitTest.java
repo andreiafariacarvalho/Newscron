@@ -8,6 +8,10 @@ package ch.newscron.referralUrlUtils;
 
 import ch.newscron.encryption.Encryption;
 import java.io.UnsupportedEncodingException;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.json.simple.JSONObject;
@@ -26,6 +30,7 @@ public class ShortenerURLJUnitTest {
     JSONObject inviteData = new JSONObject();
     String longURL;
     String referralURL;
+    DateFormat valDateFormat = new SimpleDateFormat("dd.MM.yy");
     
     public ShortenerURLJUnitTest() {
     }
@@ -39,12 +44,16 @@ public class ShortenerURLJUnitTest {
     }
     
     @Before
-    public void setUp() throws UnsupportedEncodingException {
+    public void setUp() throws UnsupportedEncodingException, ParseException {
         inviteData.put("userId", "12345");
         inviteData.put("rew1", "40%");
         inviteData.put("rew2", "50%");
-        inviteData.put("val", "05/10/2015");
-        String stringEncoded = Encryption.encode(inviteData);
+        inviteData.put("val", "05.10.2015");
+        long userIdInvite = Long.parseLong((String)inviteData.get("userId"));
+        String rew1Invite = (String)inviteData.get("rew1");
+        String rew2Invite = (String)inviteData.get("rew2");
+        Date valInvite = valDateFormat.parse((String)inviteData.get("val"));
+        String stringEncoded = Encryption.encode(userIdInvite, rew1Invite, rew2Invite, valInvite);
         
         longURL = "http://localhost:8080/invite/" + stringEncoded;
         referralURL = ShortenerURL.getReferralURL(longURL);

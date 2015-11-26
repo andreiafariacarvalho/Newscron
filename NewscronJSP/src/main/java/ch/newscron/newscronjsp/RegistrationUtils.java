@@ -1,12 +1,13 @@
 package ch.newscron.newscronjsp;
 
+import ch.newscron.encryption.CouponData;
 import ch.newscron.encryption.Encryption;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import ch.newscron.registration.UserRegistration;
 import ch.newscron.referralUrlUtils.ShortenerURL;
 import java.io.UnsupportedEncodingException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.codec.binary.Base64;
@@ -23,6 +24,7 @@ import org.apache.commons.codec.binary.Base64;
  */
 public class RegistrationUtils {
     public static String domain = "http://localhost:8080/";
+    private static final DateFormat valDateFormat = new SimpleDateFormat("dd.MM.yy"); // Format of the date used to store the validity
 
     String firstName;
     String lastName;
@@ -51,21 +53,12 @@ public class RegistrationUtils {
     
     public String checkURLValidity(String registrationURL) throws ParseException {
         String encodedPart = registrationURL.split("/")[4];
-        String url = Encryption.decode(encodedPart.trim());
+        CouponData url = Encryption.decode(encodedPart.trim());
 
         if (url == null) {
             return "<p> Invalid URL </p>";
-        }
-        
-        else if (url.equals("")) {
-            return "<p> Corrupt URL - invalid data! </p>";
-        }
-        
-        else { //url is not corrupt - check date validity
-            JSONParser parser = new JSONParser();
-            JSONObject newobj = (JSONObject) parser.parse(url);
-            String val = newobj.get("val").toString();
-            return "<p> [URL valid until: " + val + " ]</p>";
+        } else { //url is not corrupt - check date validity
+            return "<p> [URL valid until: " + valDateFormat.format(url.getVal()) + " ]</p>";
         }
     }
     

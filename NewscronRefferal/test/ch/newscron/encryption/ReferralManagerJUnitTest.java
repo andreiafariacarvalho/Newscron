@@ -13,6 +13,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import org.json.simple.JSONObject;
 import org.junit.After;
@@ -31,6 +34,7 @@ public class ReferralManagerJUnitTest {
     static JSONObject inviteData = new JSONObject();
     static Connection con;
     static String referralURL;
+    DateFormat valDateFormat = new SimpleDateFormat("dd.MM.yy");
     
     public ReferralManagerJUnitTest() {
     }
@@ -40,11 +44,7 @@ public class ReferralManagerJUnitTest {
         inviteData.put("userId", "0");
         inviteData.put("rew1", "40%");
         inviteData.put("rew2", "50%");
-        inviteData.put("val", "05/10/2015");
-        String stringEncoded = Encryption.encode(inviteData);
-        String url = "app.segmento/newscron/invite/%s";
-        url = String.format(url, stringEncoded);
-        referralURL = ShortenerURL.getReferralURL(url);
+        inviteData.put("val", "05.10.2015");
     }
     
     @AfterClass
@@ -60,7 +60,15 @@ public class ReferralManagerJUnitTest {
     }
     
     @Before
-    public void setUp() {
+    public void setUp() throws java.text.ParseException {
+        long userIdInvite = Long.parseLong((String)inviteData.get("userId"));
+        String rew1Invite = (String)inviteData.get("rew1");
+        String rew2Invite = (String)inviteData.get("rew2");
+        Date valInvite = valDateFormat.parse((String)inviteData.get("val"));
+        String stringEncoded = Encryption.encode(userIdInvite, rew1Invite, rew2Invite, valInvite);
+        String url = "app.segmento/newscron/invite/%s";
+        url = String.format(url, stringEncoded);
+        referralURL = ShortenerURL.getReferralURL(url);
     }
     
     @After

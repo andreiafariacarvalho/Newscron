@@ -57,11 +57,8 @@ public class Encryption {
      * @return encoded string 
      */
     private static String encode(JSONObject inviteData) {
-        System.out.println("erfefefr");
         try {
-            System.out.println("edfbjknlw");
             if(checkDataValidity(inviteData)) {     //NOTE: To obtain max number of available characters call the function availableParameterLength(String initialURL)
-                System.out.println(inviteData.toJSONString());
                 //Create hash from inviteData fields
                 byte[] hash = createMD5Hash(inviteData);
 
@@ -139,7 +136,6 @@ public class Encryption {
      * @return a MD5 hash of type byte[]
      */
     public static byte[] createMD5Hash(JSONObject obj) {
-        System.out.println("jknlnkj");
         //Create a string of the fields with format: "<userId>$<rew1>$<rew2>$<val>"
         StringJoiner stringToHash = new StringJoiner("$");
         stringToHash.add((String) obj.get("userId"));
