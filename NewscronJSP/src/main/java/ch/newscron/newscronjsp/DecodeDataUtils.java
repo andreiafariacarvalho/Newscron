@@ -11,8 +11,6 @@ import ch.newscron.referralUrlUtils.ShortenerURL;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 /**
@@ -31,15 +29,11 @@ public class DecodeDataUtils {
 
     public String showURLData() throws ParseException, Exception {
         CouponData url = Encryption.decode(encodedURL.trim());
+        userId = Long.toString(url.getUserId());
 
         if (url == null) {
                 return "<p> Invalid URL </p>";
-        }
-        
-        else if (url.equals("")) {
-                return "<p> Corrupt URL - invalid data! </p>";
-        }
-        else {
+        } else {
             return "<table border='0' class=\"center\"> "
                     + "<tr> " + " <td> userId: </td> <td>" + userId + "</td> " + "</tr> "
                     + "<tr> " + " <td> rew1: </td> <td>" + url.getRew1() + "</td> " + "</tr> "

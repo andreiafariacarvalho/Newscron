@@ -27,7 +27,7 @@ import org.apache.commons.codec.binary.Base64;
 public class ReferralSignUpServlet extends HttpServlet  {
     private static final String domain = "http://localhost:8080/%s";
     private static final String path = "sign_up/";
-    private static String signupPage = String.format(domain, path);
+//    private static String signupPage = String.format(domain, path);
     private static final DateFormat valDateFormat = new SimpleDateFormat("dd.MM.yy"); // Format of the date used to store the validity
 
     
@@ -36,6 +36,7 @@ public class ReferralSignUpServlet extends HttpServlet  {
                     HttpServletResponse response)
             throws ServletException, IOException
     {
+        String signupPage = String.format(domain, path);
         try {        
             
             String[] urlPartsPath = request.getRequestURI().split("/"); 

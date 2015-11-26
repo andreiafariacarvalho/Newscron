@@ -52,14 +52,18 @@ public class RegistrationUtils {
     }
     
     public String checkURLValidity(String registrationURL) throws ParseException {
-        String encodedPart = registrationURL.split("/")[4];
-        CouponData url = Encryption.decode(encodedPart.trim());
+        String[] urlParts = registrationURL.split("/");
+        if(urlParts.length > 4) {
+            String encodedPart = urlParts[4];
+            CouponData url = Encryption.decode(encodedPart.trim());
 
-        if (url == null) {
-            return "<p> Invalid URL </p>";
-        } else { //url is not corrupt - check date validity
-            return "<p> [URL valid until: " + valDateFormat.format(url.getVal()) + " ]</p>";
+            if (url == null) {
+                return "<p> Invalid URL </p>";
+            } else { //url is not corrupt - check date validity
+                return "<p> [URL valid until: " + valDateFormat.format(url.getVal()) + " ]</p>";
+            }
         }
+        return "<p> Validity expired </p>";
     }
     
     public String getReward(String prevURL) {
