@@ -1,4 +1,4 @@
-package ch.newscron.shortUrlUtils;
+package ch.newscron.referralUrlUtils;
 
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.Unirest;
@@ -29,7 +29,7 @@ public class ShortenerURL {
      * @param longURL is the full (domain/path/ENCODED_DATA) URL created for inviting potential members
      * @return a String which is the goo.gl shortened URL correlated to the original long URL.
      */
-    public static String getShortURL(String longURL) {
+    public static String getReferralURL(String longURL) {
         try {
             JSONObject data = new JSONObject();
             data.put("longUrl", longURL);
@@ -45,20 +45,20 @@ public class ShortenerURL {
 
     /**
      * Given a shortened goo.gl URL, the function makes a request to the Google API (with key), receives information as a response in JSONObject format and stores data into a ShortLinkStat object.
-     * @param shortURL is a String representing the shortened goo.gl URL
+     * @param referralURL is a String representing the shortened goo.gl URL
      * @return a ShortLinkStat object consisting of the most important information (clicks, long and short URL)
      */
-    public static ShortLinkStat getURLJSONObject(String shortURL) {
+    public static ShortLinkStat getURLStatistics(String referralURL) {
         ShortLinkStat linkStat;
 
         try {
             // Creating the URL with Google API
             URIBuilder urlData = new URIBuilder(google_url);
-            urlData.addParameter("shortUrl", shortURL);
+            urlData.addParameter("shortUrl", referralURL);
             urlData.addParameter("projection", "FULL");
             URL url = urlData.build().toURL();
             
-            // Get the JSONObject format of shortURL as String
+            // Get the JSONObject format of referralURL as String
             ObjectMapper mapper = new ObjectMapper();
             JsonNode rootNode = mapper.readTree(url);
             if(rootNode == null) {
@@ -75,20 +75,20 @@ public class ShortenerURL {
     
     /**
      * Given a shortened goo.gl URL, extracts the all-time number of clicks from a ShortLinkStat object
-     * @param shortURL is a String representing the shortened goo.gl URL
+     * @param referralURL is a String representing the shortened goo.gl URL
      * @return an int representing the number of all-time clicks of the shortened goo.gl URL
      */
-    public static int getClicksShortURL(String shortURL) {
-        return getURLJSONObject(shortURL).allTimeShortClicks;
+    public static int getClicksReferralURL(String referralURL) {
+        return getURLStatistics(referralURL).allTimeShortClicks;
     }
     
     /**
      * Given a shortened goo.gl URL, extracts the original long URL from a ShortLinkStat object
-     * @param shortURL is a String representing the shortened goo.gl URL
+     * @param referralURL is a String representing the shortened goo.gl URL
      * @return a String representing the original URL
      */
-    public static String getLongURL(String shortURL) {
-        return getURLJSONObject(shortURL).longUrl;
+    public static String getLongURL(String referralURL) {
+        return getURLStatistics(referralURL).longUrl;
     }
 
     /**
@@ -100,9 +100,9 @@ public class ShortenerURL {
         ShortLinkStat linkStat = new ShortLinkStat();
         
         try {
-            JsonNode shortUrlNode = linkData.get("id");
-            if (shortUrlNode != null) {
-                linkStat.shortUrl = shortUrlNode.asText();
+            JsonNode referralUrlNode = linkData.get("id");
+            if (referralUrlNode != null) {
+                linkStat.referralUrl = referralUrlNode.asText();
             }
 
             JsonNode longUrlNode = linkData.get("longUrl");

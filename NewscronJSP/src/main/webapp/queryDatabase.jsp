@@ -12,9 +12,9 @@
         <title>JSP Page</title>
     </head>
     <body>
-        <h2> Get unique shortURLs for specific user </h2>
-        <form method=POST action="userShortUrlStats.jsp">
-        Customer ID <input type=text name=customerId><br>
+        <h2> Get unique ReferralURLs for specific user </h2>
+        <form method=POST action="userReferralURLStats.jsp">
+        Customer ID <input type=text name=userId><br>
         <p><input type=submit name="queryDatabase">
         </form>        
         <br> <br> <hr> <br> <br>

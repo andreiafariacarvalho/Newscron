@@ -7,8 +7,8 @@ package ch.newscron.encryption;
  */
 
 import ch.newscron.referral.ReferralManager;
-import ch.newscron.referral.CustomerShortURL;
-import ch.newscron.shortUrlUtils.ShortenerURL;
+import ch.newscron.referral.UserReferralURL;
+import ch.newscron.referralUrlUtils.ShortenerURL;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -30,21 +30,21 @@ public class ReferralManagerJUnitTest {
     
     static JSONObject inviteData = new JSONObject();
     static Connection con;
-    static String shortURL;
+    static String referralURL;
     
     public ReferralManagerJUnitTest() {
     }
     
     @BeforeClass
     public static void setUpClass() {
-        inviteData.put("custID", "0");
+        inviteData.put("userId", "0");
         inviteData.put("rew1", "40%");
         inviteData.put("rew2", "50%");
         inviteData.put("val", "05/10/2015");
         String stringEncoded = Encryption.encode(inviteData);
         String url = "app.segmento/newscron/invite/%s";
         url = String.format(url, stringEncoded);
-        shortURL = ShortenerURL.getShortURL(url);
+        referralURL = ShortenerURL.getReferralURL(url);
     }
     
     @AfterClass
@@ -52,9 +52,9 @@ public class ReferralManagerJUnitTest {
         // Delete inserted query
         con = ReferralManager.connect();
         PreparedStatement query = null;
-        query = con.prepareStatement("DELETE FROM ShortURL WHERE custId= ? AND shortUrl = ?");
-        query.setLong(1, Long.parseLong((String) inviteData.get("custID")));
-        query.setString(2, shortURL);
+        query = con.prepareStatement("DELETE FROM referralURL WHERE userId= ? AND referralUrl = ?");
+        query.setLong(1, Long.parseLong((String) inviteData.get("userId")));
+        query.setString(2, referralURL);
         query.execute();
         ReferralManager.disconnect(con, null);
     }
@@ -77,21 +77,21 @@ public class ReferralManagerJUnitTest {
     @Test
     public void databaseTest() throws SQLException {
         con = ReferralManager.connect();
-        int numberShortURLbefore = ReferralManager.getCustomerShortURLs(Long.parseLong((String) inviteData.get("custID"))).size();
-        boolean b = ReferralManager.insertShortURL(Long.parseLong((String) inviteData.get("custID")), shortURL);
+        int numberReferralURLbefore = ReferralManager.getUserReferralURLs(Long.parseLong((String) inviteData.get("userId"))).size();
+        boolean b = ReferralManager.insertReferralURL(Long.parseLong((String) inviteData.get("userId")), referralURL);
         ReferralManager.disconnect(con, null);
         
         con = ReferralManager.connect();
-        List<CustomerShortURL> listShortURL = ReferralManager.getCustomerShortURLs(Long.parseLong((String) inviteData.get("custID")));
-        assertTrue(listShortURL.size() == numberShortURLbefore + 1);
+        List<UserReferralURL> listReferralURL = ReferralManager.getUserReferralURLs(Long.parseLong((String) inviteData.get("userId")));
+        assertTrue(listReferralURL.size() == numberReferralURLbefore + 1);
         ReferralManager.disconnect(con, null);
         
         con = ReferralManager.connect();
         PreparedStatement query = null;
         ResultSet rs = null;
-        query = con.prepareStatement("SELECT * FROM ShortURL WHERE custId = ? AND shortUrl = ?");
-        query.setLong(1, Long.parseLong((String) inviteData.get("custID")));
-        query.setString(2, shortURL);
+        query = con.prepareStatement("SELECT * FROM referralURL WHERE userId = ? AND referralUrl = ?");
+        query.setLong(1, Long.parseLong((String) inviteData.get("userId")));
+        query.setString(2, referralURL);
         rs = query.executeQuery();
         int count = 0;
         while (rs.next()) 

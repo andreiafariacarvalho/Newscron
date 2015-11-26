@@ -52,28 +52,28 @@ public class UserRegistration {
         return null;
     }
     
-    public static void insertUser(String name, String lastName, String email, String shortURL) {
-        long shortUrlId = getShortUrlId(shortURL);
-        if (shortUrlId == -1) {
-            //check if shortUrlId exists
+    public static void insertUser(String name, String lastName, String email, String referralURL) {
+        long referralUrlId = getReferralURLId(referralURL);
+        if (referralUrlId == -1) {
+            //check if referralUrlId exists
         } else{
-            registerUserByShortURL(name, lastName, email, shortUrlId);
+            registerUserByReferralURL(name, lastName, email, referralUrlId);
         }
         
     }
     
-    public static long getShortUrlId(String shortURL) {
+    public static long getReferralURLId(String referralURL) {
         Connection connection = null;
         PreparedStatement query = null;
         ResultSet rs = null;
         try {
             connection = connect();
-            query = connection.prepareStatement("SELECT id FROM ShortURL WHERE shortUrl=?");
-            query.setString(1, shortURL);
+            query = connection.prepareStatement("SELECT id FROM referralURL WHERE referralUrl=?");
+            query.setString(1, referralURL);
             rs = query.executeQuery();
             rs.next();
-            long shortURLId = rs.getLong("id");           
-            return shortURLId;
+            long referralURLId = rs.getLong("id");           
+            return referralURLId;
         }  catch (Exception ex) {
             Logger.getLogger(UserRegistration.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
@@ -82,7 +82,7 @@ public class UserRegistration {
         return -1;
     }
     
-    public static void registerUserByShortURL(String name, String lastName, String email, long shortUrlId) {
+    public static void registerUserByReferralURL(String name, String lastName, String email, long referralUrlId) {
         Connection connection = null;
         PreparedStatement query = null;
         ResultSet rs = null;
@@ -92,7 +92,7 @@ public class UserRegistration {
             query.setString(1, name);
             query.setString(2, lastName);
             query.setString(3, email);
-            query.setLong(4, shortUrlId);
+            query.setLong(4, referralUrlId);
             query.executeUpdate();
         }  catch (Exception ex) {
             Logger.getLogger(UserRegistration.class.getName()).log(Level.SEVERE, null, ex);
@@ -107,7 +107,7 @@ public class UserRegistration {
         ResultSet rs = null;
         try {
             connection = connect();
-            query = connection.prepareStatement("SELECT * FROM ShortURL, User WHERE User.campaignId=ShortURL.id");
+            query = connection.prepareStatement("SELECT * FROM referralURL, User WHERE User.campaignId=referralURL.id");
             rs = query.executeQuery();
             List<User> userList = parseResultSet(rs);
 
@@ -143,7 +143,7 @@ public class UserRegistration {
         List<User> userList = new ArrayList<>(); 
         try {      
             while (resultSet.next()) {
-                User newUser = new User(resultSet.getString("name"), resultSet.getString("lastName"), resultSet.getString("email"), resultSet.getLong("campaignId"), resultSet.getString("custID"), resultSet.getString("shortURL"));
+                User newUser = new User(resultSet.getString("name"), resultSet.getString("lastName"), resultSet.getString("email"), resultSet.getLong("campaignId"), resultSet.getString("userId"), resultSet.getString("referralURL"));
                 userList.add(newUser);     
             }
             return userList;

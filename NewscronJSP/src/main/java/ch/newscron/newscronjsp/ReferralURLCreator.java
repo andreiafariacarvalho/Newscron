@@ -7,7 +7,7 @@ package ch.newscron.newscronjsp;
 import org.json.simple.JSONObject;
 import ch.newscron.encryption.Encryption;
 import ch.newscron.referral.ReferralManager;
-import ch.newscron.shortUrlUtils.ShortenerURL;
+import ch.newscron.referralUrlUtils.ShortenerURL;
 import java.io.IOException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -21,7 +21,7 @@ import javax.servlet.http.*;
  * @author Din
  */
 
-public class ShortUrlCreator extends HttpServlet  {
+public class ReferralURLCreator extends HttpServlet  {
     public static String domain = "http://localhost:8080/";
     @Override
      public void doGet(HttpServletRequest request,
@@ -29,22 +29,22 @@ public class ShortUrlCreator extends HttpServlet  {
             throws ServletException, IOException
     {
         try {        
-            String customerId = request.getParameter("customerId");
+            String userId = request.getParameter("userId");
             String rew1 = request.getParameter("rew1");
             String rew2 = request.getParameter("rew2");
             String val = request.getParameter("val");
             
-            String urlEncoded = encodeUrl(customerId, rew1, rew2, val);
+            String urlEncoded = encodeUrl(userId, rew1, rew2, val);
             if (urlEncoded==null) {
                 response.sendRedirect(domain); 
             } else {
-            insertToDatabase(Long.parseLong(customerId), domain + "referral/" + urlEncoded);
-            String redirectURL = domain + "userShortUrlStats?customerId="+customerId;
+            insertToDatabase(Long.parseLong(userId), domain + "referral/" + urlEncoded);
+            String redirectURL = domain + "userReferralURLStats?userId="+userId;
             response.sendRedirect(redirectURL);
             }
             
         } catch (Exception ex) {
-            Logger.getLogger(ShortUrlCreator.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ReferralURLCreator.class.getName()).log(Level.SEVERE, null, ex);
         }
       
   }
@@ -56,22 +56,22 @@ public class ShortUrlCreator extends HttpServlet  {
      doGet(request, response);
   }
 
-    private JSONObject createJSON(String customerId, String rew1, String rew2, String val) {
+    private JSONObject createJSON(String userId, String rew1, String rew2, String val) {
         JSONObject obj = new JSONObject();
-        obj.put("custID", customerId);
+        obj.put("userId", userId);
         obj.put("rew1", rew1);
         obj.put("rew2", rew2);
         obj.put("val", val);
         return obj;
     }
     
-    private String encodeUrl(String customerId, String rew1, String rew2, String val) throws Exception {
-        JSONObject fullParam = createJSON(customerId, rew1, rew2, val);
+    private String encodeUrl(String userId, String rew1, String rew2, String val) throws Exception {
+        JSONObject fullParam = createJSON(userId, rew1, rew2, val);
         return Encryption.encode(fullParam);
     }
     
-    private boolean insertToDatabase(long customerId, String longURL) {
-        String shortURL = ShortenerURL.getShortURL(longURL);
-        return ReferralManager.insertShortURL(customerId, shortURL);
+    private boolean insertToDatabase(long userId, String longURL) {
+        String referralURL = ShortenerURL.getReferralURL(longURL);
+        return ReferralManager.insertReferralURL(userId, referralURL);
     }
 }

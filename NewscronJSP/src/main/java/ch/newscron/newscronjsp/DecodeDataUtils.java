@@ -6,7 +6,7 @@
 package ch.newscron.newscronjsp;
 
 import ch.newscron.encryption.Encryption;
-import ch.newscron.shortUrlUtils.ShortenerURL;
+import ch.newscron.referralUrlUtils.ShortenerURL;
 import java.io.IOException;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -18,7 +18,7 @@ import org.json.simple.parser.ParseException;
  */
 public class DecodeDataUtils {
     
-    private String customerId;
+    private String userId;
     String encodedURL;
     public static String domain = "http://localhost:8080/";
     
@@ -38,13 +38,13 @@ public class DecodeDataUtils {
         else {
             JSONParser parser = new JSONParser();
             JSONObject newobj = (JSONObject) parser.parse(url);
-            customerId = newobj.get("custID").toString();
+            userId = newobj.get("userId").toString();
             String rew1 = newobj.get("rew1").toString();
             String rew2 = newobj.get("rew2").toString();
             String val = newobj.get("val").toString();
 
             return "<table border='0' class=\"center\"> "
-                    + "<tr> " + " <td> custID: </td> <td>" + customerId + "</td> " + "</tr> "
+                    + "<tr> " + " <td> userId: </td> <td>" + userId + "</td> " + "</tr> "
                     + "<tr> " + " <td> rew1: </td> <td>" + rew1 + "</td> " + "</tr> "
                     + "<tr> " + " <td> rew2: </td> <td>" + rew2 + "</td> " + "</tr> "
                     + "<tr> " + " <td> val: </td> <td>" + val + "</td> " + "</tr> "
@@ -57,11 +57,11 @@ public class DecodeDataUtils {
     }
     
     public String getShorterUrl() throws IOException {
-        return ShortenerURL.getShortURL(domain + "referral/" + encodedURL);
+        return ShortenerURL.getReferralURL(domain + "referral/" + encodedURL);
     }
     
-    public String getCustomerId() {
-        return customerId;
+    public String getUserId() {
+        return userId;
     }
     
 }

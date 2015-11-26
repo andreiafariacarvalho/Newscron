@@ -5,7 +5,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import ch.newscron.registration.UserRegistration;
-import ch.newscron.shortUrlUtils.ShortenerURL;
+import ch.newscron.referralUrlUtils.ShortenerURL;
 import java.io.UnsupportedEncodingException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -45,8 +45,8 @@ public class RegistrationUtils {
     
     public void insertUser(String prevURL) {
         String longURL = prevURL.split("/")[4];
-        String shortURL = ShortenerURL.getShortURL(domain + "referral/" + longURL);
-        UserRegistration.insertUser(firstName, lastName, emailAdd, shortURL);
+        String referralURL = ShortenerURL.getReferralURL(domain + "referral/" + longURL);
+        UserRegistration.insertUser(firstName, lastName, emailAdd, referralURL);
     }
     
     public String checkURLValidity(String registrationURL) throws ParseException {

@@ -52,20 +52,20 @@ public class ReferralManager {
     }
     
     /**
-     * Given a customer id and a generated short URL, inserts these two as a new row in the ShortURL table of the database
-     * @param customerId an long representing the unique customer id
-     * @param shortURL a String representing the short goo.gl generated URL
+     * Given a user id and a generated short URL, inserts these two as a new row in the referralURL table of the database
+     * @param userId an long representing the unique user id
+     * @param referralURL a String representing the short goo.gl generated URL
      */
-    public static boolean insertShortURL(long customerId, String shortURL) {
+    public static boolean insertReferralURL(long userId, String referralURL) {
         Connection connection = null;
         PreparedStatement query = null;
         try {
             connection = connect();
-            query = connection.prepareStatement("INSERT IGNORE INTO ShortURL (custId, shortUrl) VALUES(?, ?)");
-            query.setLong(1, customerId);
-            query.setString(2, shortURL);
-            int newShortURL = query.executeUpdate();
-            return newShortURL == 1;
+            query = connection.prepareStatement("INSERT IGNORE INTO referralURL (userId, referralUrl) VALUES(?, ?)");
+            query.setLong(1, userId);
+            query.setString(2, referralURL);
+            int newReferralURL = query.executeUpdate();
+            return newReferralURL == 1;
         } catch (Exception ex) {
             Logger.getLogger(ReferralManager.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
@@ -75,19 +75,19 @@ public class ReferralManager {
     }
     
     /**
-     * Calls the database to query for all rows in ShortURL table of database
-     * @return a List of CustomerShortURL objects, consisting of all shortURL entries in table
+     * Calls the database to query for all rows in referralURL table of database
+     * @return a List of UserReferralURL objects, consisting of all referralURL entries in table
      */
-    public static List<CustomerShortURL> getAllShortURLs() {
+    public static List<UserReferralURL> getAllReferralURLs() {
         Connection connection = null;
         PreparedStatement query = null;
         ResultSet rs = null;
         try {
             connection = connect();
-            query = connection.prepareStatement("SELECT * FROM ShortURL");
+            query = connection.prepareStatement("SELECT * FROM referralURL");
             rs = query.executeQuery();
-            List<CustomerShortURL> shortURLList = parseResultSet(rs);
-            return shortURLList;
+            List<UserReferralURL> referralURLList = parseResultSet(rs);
+            return referralURLList;
         } catch (Exception ex) {
             Logger.getLogger(ReferralManager.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
@@ -97,21 +97,21 @@ public class ReferralManager {
     }
     
     /**
-     * Calls the database to query for all rows in ShortURL table of database in relation to customerId
-     * @param customerId a long representing the unique customer id
-     * @return a List of CustomerShortURL objects, consisting of the shortURL table entries corresponding to the given customerId 
+     * Calls the database to query for all rows in referralURL table of database in relation to userId
+     * @param userId a long representing the unique user id
+     * @return a List of UserReferralURL objects, consisting of the referralURL table entries corresponding to the given userId 
      */
-    public static List<CustomerShortURL> getCustomerShortURLs(long customerId) {
+    public static List<UserReferralURL> getUserReferralURLs(long userId) {
         Connection connection = null;
         PreparedStatement query = null;
         ResultSet rs = null;
         try {
             connection = connect();
-            query = connection.prepareStatement("SELECT * FROM ShortURL WHERE custId = ?");
-            query.setLong(1, customerId);
+            query = connection.prepareStatement("SELECT * FROM referralURL WHERE userId = ?");
+            query.setLong(1, userId);
             rs = query.executeQuery();
-            List<CustomerShortURL> shortURLList = parseResultSet(rs);
-            return shortURLList;
+            List<UserReferralURL> referralURLList = parseResultSet(rs);
+            return referralURLList;
         } catch (Exception ex) {
             Logger.getLogger(ReferralManager.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
@@ -120,14 +120,14 @@ public class ReferralManager {
         return null;
     }
     
-    public static int numberOfRegisteredUsers(String shortURL) {
+    public static int numberOfRegisteredUsers(String referralURL) {
         Connection connection = null;
         PreparedStatement query = null;
         ResultSet rs = null;
         try {
             connection = connect();
-            query = connection.prepareStatement("SELECT COUNT(*) as total FROM User, ShortURL WHERE User.campaignId = ShortURL.id AND ShortURL.shortUrl = ?");
-            query.setString(1, shortURL);
+            query = connection.prepareStatement("SELECT COUNT(*) as total FROM User, referralURL WHERE User.campaignId = referralURL.id AND referralURL.referralUrl = ?");
+            query.setString(1, referralURL);
             rs = query.executeQuery();
             rs.next();
             int totalNumbUsers = rs.getInt("total");
@@ -160,18 +160,18 @@ public class ReferralManager {
     }
     
     /**
-     * Helper function: given a resultSet, processes the data into a list of CustomerShortURL objects
+     * Helper function: given a resultSet, processes the data into a list of UserReferralURL objects
      * @param resultSet a ResultSet returned from a database query
-     * @return a List of CustomerShortURL objects
+     * @return a List of UserReferralURL objects
      */
-    private static List<CustomerShortURL> parseResultSet(ResultSet resultSet) {
-        List<CustomerShortURL> shortURLList = new ArrayList<>(); 
+    private static List<UserReferralURL> parseResultSet(ResultSet resultSet) {
+        List<UserReferralURL> referralURLList = new ArrayList<>(); 
         try {
             while (resultSet.next()) {
-                CustomerShortURL newShortURL = new CustomerShortURL(Long.parseLong(resultSet.getString("custId")), resultSet.getString("shortUrl"));
-                shortURLList.add(newShortURL);     
+                UserReferralURL newReferralURL = new UserReferralURL(Long.parseLong(resultSet.getString("userId")), resultSet.getString("referralUrl"));
+                referralURLList.add(newReferralURL);     
             }
-            return shortURLList;
+            return referralURLList;
         } catch (SQLException ex) {
             Logger.getLogger(ReferralManager.class.getName()).log(Level.SEVERE, null, ex);
         }

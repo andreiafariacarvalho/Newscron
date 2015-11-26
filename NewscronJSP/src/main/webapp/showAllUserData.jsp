@@ -8,7 +8,7 @@
 <%@page import="ch.newscron.encryption.Encryption"%>
 
 <!DOCTYPE html>
-<jsp:useBean id="statistics" class="ch.newscron.newscronjsp.ShortUrlStatistics" scope="session"/> 
+<jsp:useBean id="statistics" class="ch.newscron.newscronjsp.ReferralURLStatistics" scope="session"/> 
 
 
 <html>

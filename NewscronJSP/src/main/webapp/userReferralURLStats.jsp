@@ -1,5 +1,5 @@
 <%-- 
-    Document   : userShortUrlStats
+    Document   : userReferralURLStats
     Created on : Sep 25, 2015, 4:28:22 PM
     Author     : Din
 --%>
@@ -8,14 +8,14 @@
 <%@page import="ch.newscron.encryption.Encryption"%>
 
 <!DOCTYPE html>
-<jsp:useBean id="statistics" class="ch.newscron.newscronjsp.ShortUrlStatistics" scope="session"/> 
+<jsp:useBean id="statistics" class="ch.newscron.newscronjsp.ReferralURLStatistics" scope="session"/> 
 
 
 <html>
     <head></head>
 
     <body>
-        <%= statistics.showStatisticsTable(request.getParameter("customerId")) %>
+        <%= statistics.showStatisticsTable(request.getParameter("userId")) %>
     </body>
     <style>
         h1, h3 {

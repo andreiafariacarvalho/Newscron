@@ -56,7 +56,7 @@ public class ReferralSignUpServlet extends HttpServlet  {
             }
             
         } catch (Exception ex) {
-            Logger.getLogger(ShortUrlCreator.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ReferralURLCreator.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
             response.sendRedirect(signupPage);
         }

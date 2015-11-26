@@ -1,11 +1,11 @@
-package ch.newscron.shortUrlUtils;
+package ch.newscron.referralUrlUtils;
 
 
 
 public class ShortLinkStat {
     
     public String longUrl;
-    public String shortUrl;
+    public String referralUrl;
     public int allTimeShortClicks;
     public int monthShortClicks;
     public int weekShortClicks;

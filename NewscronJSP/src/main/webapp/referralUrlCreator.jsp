@@ -10,8 +10,8 @@
 <html>
 <body>
     <h1>Invite data</h1>
-    <form method=POST action=ShortUrlCreator>
-        CustomerID <input type=text name="customerId"><br>
+    <form method=POST action=ReferralURLCreator>
+        UserId <input type=text name="userId"><br>
         Reward1 <input type=text name="rew1"><br>
         Reward2 <input type=text name="rew2"><br>
         Validity <input type=text name="val">

@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package ch.newscron.shortUrlUtils;
+package ch.newscron.referralUrlUtils;
 
 
 import ch.newscron.encryption.Encryption;
@@ -25,7 +25,7 @@ import static org.junit.Assert.*;
 public class ShortenerURLJUnitTest {
     JSONObject inviteData = new JSONObject();
     String longURL;
-    String shortURL;
+    String referralURL;
     
     public ShortenerURLJUnitTest() {
     }
@@ -40,14 +40,14 @@ public class ShortenerURLJUnitTest {
     
     @Before
     public void setUp() throws UnsupportedEncodingException {
-        inviteData.put("custID", "12345");
+        inviteData.put("userId", "12345");
         inviteData.put("rew1", "40%");
         inviteData.put("rew2", "50%");
         inviteData.put("val", "05/10/2015");
         String stringEncoded = Encryption.encode(inviteData);
         
         longURL = "http://localhost:8080/invite/" + stringEncoded;
-        shortURL = ShortenerURL.getShortURL(longURL);
+        referralURL = ShortenerURL.getReferralURL(longURL);
     }
     
     @After
@@ -55,31 +55,31 @@ public class ShortenerURLJUnitTest {
     }
     
     @Test
-    public void getShortURLTest() {
+    public void getReferralURLTest() {
         
-        assertNull(ShortenerURL.getShortURL(""));
+        assertNull(ShortenerURL.getReferralURL(""));
         
-        assertNotNull(shortURL);
+        assertNotNull(referralURL);
         
-        assertFalse(longURL.equals(shortURL));
+        assertFalse(longURL.equals(referralURL));
         
-        assertTrue(shortURL.substring(0,14).equals("http://goo.gl/"));
+        assertTrue(referralURL.substring(0,14).equals("http://goo.gl/"));
                 
     }
     
     @Test
     public void getURLJSONObjectTest() {
-        assertNull(ShortenerURL.getURLJSONObject(null));
+        assertNull(ShortenerURL.getURLStatistics(null));
 
-        ShortLinkStat shortURLJSONObject = ShortenerURL.getURLJSONObject(shortURL);
+        ShortLinkStat referralURLJSONObject = ShortenerURL.getURLStatistics(referralURL);
         
-        assertTrue(shortURLJSONObject.shortUrl.equals(shortURL));
+        assertTrue(referralURLJSONObject.referralUrl.equals(referralURL));
         
-        assertTrue(shortURLJSONObject.longUrl.equals(longURL));
+        assertTrue(referralURLJSONObject.longUrl.equals(longURL));
     }
     
     @Test
-    public void getClicksShortURLTest() {
+    public void getClicksReferralURLTest() {
         
         //TODO: How to simulate a 'click' ? Or do so manually?
         
@@ -87,7 +87,7 @@ public class ShortenerURLJUnitTest {
     @Test
     public void getLongURLTest() {
         
-        assertTrue(ShortenerURL.getLongURL(shortURL).equals(longURL));
+        assertTrue(ShortenerURL.getLongURL(referralURL).equals(longURL));
     }
     
     @Test
@@ -112,9 +112,9 @@ public class ShortenerURLJUnitTest {
         analytics.put("allTime", allTime);
         
         JSONObject node = new JSONObject();
-        String shortUrl = "http:\\/\\/goo.gl\\/14Gmwu";
+        String referralUrl = "http:\\/\\/goo.gl\\/14Gmwu";
         String longUrl = "http:\\/\\/www.newscron.com\\/invite\\/abc";
-        node.put("id", shortUrl);
+        node.put("id", referralUrl);
         node.put("longUrl", longUrl);
         node.put("analytics", analytics);
         
@@ -123,7 +123,7 @@ public class ShortenerURLJUnitTest {
         
         ShortLinkStat statsObj = ShortenerURL.setData(n);
         assertTrue(statsObj.longUrl.equals(longUrl));
-        assertTrue(statsObj.shortUrl.equals(shortUrl));
+        assertTrue(statsObj.referralUrl.equals(referralUrl));
         assertTrue(statsObj.allTimeShortClicks == 10);
         assertTrue(statsObj.monthShortClicks == 7);
         assertTrue(statsObj.weekShortClicks == 7);
