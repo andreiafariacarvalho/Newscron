@@ -34,7 +34,7 @@ public class Encryption {
     
     /**
      * Given a JSONObject, it is encoded and returned as a String.
-     * @param inviteData is a JSONObject having the data with the keys "custID", "rew1", "rew2" and "val"
+     * @param inviteData is a JSONObject having the data with the keys "customerId", "rew1", "rew2" and "val"
      * @return encoded string 
      */
     public static String encode(JSONObject inviteData) {
@@ -52,7 +52,7 @@ public class Encryption {
   
     /**
      * Given a JSONObject, and maybe an hash, it is encoded and returned as a String.
-     * @param inviteData is a JSONObject having the data with the keys "custID", "rew1", "rew2" and "val"
+     * @param inviteData is a JSONObject having the data with the keys "customerId", "rew1", "rew2" and "val"
      * @param md5Hash is a String that substitute the hash computed using md5 algorithm, in case it is not null and not empty
      * @return encoded string 
      */
@@ -117,7 +117,7 @@ public class Encryption {
      * @return a MD5 hash of type byte[]
      */
     public static byte[] createMD5Hash(JSONObject obj) {
-        //Create a string of the fields with format: "<custID>$<rew1>$<rew2>$<val>"
+        //Create a string of the fields with format: "<customerId>$<rew1>$<rew2>$<val>"
         StringJoiner stringToHash = new StringJoiner("$");
         stringToHash.add((String) obj.get("custID"));
         stringToHash.add((String) obj.get("rew1"));

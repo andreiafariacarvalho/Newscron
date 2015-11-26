@@ -6,15 +6,22 @@ and open the template in the editor.
 -->
 <web-app>
 <welcome-file-list>
-   <welcome-file>shortUrlCreator.jsp</welcome-file>
+   <welcome-file>/shortUrlCreator.jsp</welcome-file>
 </welcome-file-list>
+
+<error-page>
+    <error-code>404</error-code>
+    <location>/shortUrlCreator.jsp</location>
+</error-page>
+
+
     <servlet>
         <servlet-name>inviteData</servlet-name>
         <jsp-file>/registration.jsp</jsp-file>
     </servlet>
     <servlet-mapping>
         <servlet-name>inviteData</servlet-name>
-        <url-pattern>/invite/*</url-pattern>
+        <url-pattern>/sign_up/*</url-pattern>
     </servlet-mapping>
     
     <servlet>
@@ -28,11 +35,11 @@ and open the template in the editor.
     
     <servlet>
         <servlet-name>InviteForm</servlet-name>
-        <servlet-class>ch.newscron.newscronjsp.ShortUrlUtils</servlet-class>
+        <servlet-class>ch.newscron.newscronjsp.ShortUrlCreator</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>InviteForm</servlet-name>
-        <url-pattern>/ShortUrlUtils</url-pattern>
+        <url-pattern>/ShortUrlCreator</url-pattern>
     </servlet-mapping>
     
     <servlet>
@@ -61,6 +68,15 @@ and open the template in the editor.
     <servlet-mapping>
         <servlet-name>UserList</servlet-name>
         <url-pattern>/showAllUserData</url-pattern>
+    </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>ReferralServlet</servlet-name>
+        <servlet-class>ch.newscron.newscronjsp.ReferralSignUpServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ReferralServlet</servlet-name>
+        <url-pattern>/referral/*</url-pattern>
     </servlet-mapping>
     
 </web-app>

@@ -21,35 +21,30 @@ import javax.servlet.http.*;
  * @author Din
  */
 
-public class ShortUrlUtils extends HttpServlet  {
-
-    String custID;
-    String rew1;
-    String rew2;
-    String val;
-
-    public ShortUrlUtils() {
-    }
-    
+public class ShortUrlCreator extends HttpServlet  {
+    public static String domain = "http://localhost:8080/";
     @Override
      public void doGet(HttpServletRequest request,
                     HttpServletResponse response)
             throws ServletException, IOException
     {
-        try {
+        try {        
+            String customerId = request.getParameter("customerId");
+            String rew1 = request.getParameter("rew1");
+            String rew2 = request.getParameter("rew2");
+            String val = request.getParameter("val");
             
-            custID = request.getParameter("custID");
-            rew1 = request.getParameter("rew1");
-            rew2 = request.getParameter("rew2");
-            val = request.getParameter("val");
-            
-            String urlEncoded = getURLtoEncode();
-            insertToDatabase(Long.parseLong(custID), "http://localhost:8080/invite/" + urlEncoded);
-            String redirectURL = "http://localhost:8080/userShortUrlStats?custID="+custID;
+            String urlEncoded = encodeUrl(customerId, rew1, rew2, val);
+            if (urlEncoded==null) {
+                response.sendRedirect(domain); 
+            } else {
+            insertToDatabase(Long.parseLong(customerId), domain + "referral/" + urlEncoded);
+            String redirectURL = domain + "userShortUrlStats?customerId="+customerId;
             response.sendRedirect(redirectURL);
+            }
             
         } catch (Exception ex) {
-            Logger.getLogger(ShortUrlUtils.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ShortUrlCreator.class.getName()).log(Level.SEVERE, null, ex);
         }
       
   }
@@ -60,31 +55,23 @@ public class ShortUrlUtils extends HttpServlet  {
       throws ServletException, IOException {
      doGet(request, response);
   }
-  
-    public String getCustID() { return custID; }
 
-    public String getRew1() { return rew1; }
-
-    public String getRew2() { return rew2; }
-    
-    public String getVal() { return val; }
-
-    private JSONObject createJSON(String custID, String rew1, String rew2, String val) {
+    private JSONObject createJSON(String customerId, String rew1, String rew2, String val) {
         JSONObject obj = new JSONObject();
-        obj.put("custID", custID);
+        obj.put("custID", customerId);
         obj.put("rew1", rew1);
         obj.put("rew2", rew2);
         obj.put("val", val);
         return obj;
     }
     
-    private String getURLtoEncode() throws Exception {
-        JSONObject fullParam = createJSON(custID, rew1, rew2, val);
+    private String encodeUrl(String customerId, String rew1, String rew2, String val) throws Exception {
+        JSONObject fullParam = createJSON(customerId, rew1, rew2, val);
         return Encryption.encode(fullParam);
     }
     
-    private boolean insertToDatabase(long custID, String longURL) {
+    private boolean insertToDatabase(long customerId, String longURL) {
         String shortURL = ShortenerURL.getShortURL(longURL);
-        return ReferralManager.insertShortURL(custID, shortURL);
+        return ReferralManager.insertShortURL(customerId, shortURL);
     }
 }

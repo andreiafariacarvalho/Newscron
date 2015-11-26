@@ -24,7 +24,7 @@
         <%= invite.showURLData() %>
 
         
-        <%=  statistics.showStatisticsTable(invite.getCustID()) %>
+        <%=  statistics.showStatisticsTable(invite.getCustomerId()) %>
     </body>
     <style>
         h1,h3 {

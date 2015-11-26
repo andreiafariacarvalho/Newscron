@@ -40,7 +40,6 @@ public class ReferralManager {
      */
     public static Connection connect() {
         try {
-            System.out.println("DBurl: " + DBurl);
             Class.forName("com.mysql.jdbc.Driver").newInstance(); 
             Connection connection = DriverManager.getConnection(DBurl, username, password);
             return connection;
@@ -48,72 +47,97 @@ public class ReferralManager {
             throw new IllegalStateException("Cannot connect the database! ", e);
         }  catch (Exception ex) {
             Logger.getLogger(ReferralManager.class.getName()).log(Level.SEVERE, null, ex);
-        }  
+        }
         return null;
     }
     
     /**
      * Given a customer id and a generated short URL, inserts these two as a new row in the ShortURL table of the database
-     * @param CustId an int representing the unique customer id
+     * @param customerId an long representing the unique customer id
      * @param shortURL a String representing the short goo.gl generated URL
      */
-    public static boolean insertShortURL(long CustId, String shortURL) {
+    public static boolean insertShortURL(long customerId, String shortURL) {
+        Connection connection = null;
+        PreparedStatement query = null;
         try {
-            Connection connection = connect();
-            PreparedStatement query = null;
-            query = connection.prepareStatement("INSERT IGNORE INTO ShortURL VALUES(default, ?, ?)");
-            query.setLong(1, CustId);
+            connection = connect();
+            query = connection.prepareStatement("INSERT IGNORE INTO ShortURL (custId, shortUrl) VALUES(?, ?)");
+            query.setLong(1, customerId);
             query.setString(2, shortURL);
             int newShortURL = query.executeUpdate();
-            disconnect(connection, query);
             return newShortURL == 1;
-        }  catch (Exception ex) {
+        } catch (Exception ex) {
             Logger.getLogger(ReferralManager.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            disconnect(connection, query);
         }
         return false;
     }
     
     /**
      * Calls the database to query for all rows in ShortURL table of database
-     * @return a List of ShortURLDataHolder objects, consisting of all shortURL entries in table
+     * @return a List of CustomerShortURL objects, consisting of all shortURL entries in table
      */
-    public static List<ShortURLDataHolder> selectAllShortURLs() {
+    public static List<CustomerShortURL> getAllShortURLs() {
+        Connection connection = null;
+        PreparedStatement query = null;
+        ResultSet rs = null;
         try {
-            Connection connection = connect();
-            PreparedStatement query = null;
-            ResultSet rs = null;
+            connection = connect();
             query = connection.prepareStatement("SELECT * FROM ShortURL");
             rs = query.executeQuery();
-            List<ShortURLDataHolder> shortURLList = writeResultSetToList(rs);
-            disconnect(connection, query, rs);
+            List<CustomerShortURL> shortURLList = parseResultSet(rs);
             return shortURLList;
-
         } catch (Exception ex) {
             Logger.getLogger(ReferralManager.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            disconnect(connection, query, rs);
         }
         return null;
     }
     
     /**
-     * Calls the database to query for all rows in ShortURL table of database in relation to CustId
-     * @param CustId a long representing the unique customer id
-     * @return a List of ShortURLDataHolder objects, consisting of the shortURL table entries corresponding to the given CustId 
+     * Calls the database to query for all rows in ShortURL table of database in relation to customerId
+     * @param customerId a long representing the unique customer id
+     * @return a List of CustomerShortURL objects, consisting of the shortURL table entries corresponding to the given customerId 
      */
-    public static List<ShortURLDataHolder> selectSingularCustomerShortURLs(long CustId) {
+    public static List<CustomerShortURL> getCustomerShortURLs(long customerId) {
+        Connection connection = null;
+        PreparedStatement query = null;
+        ResultSet rs = null;
         try {
-            Connection connection = connect();
-            PreparedStatement query = null;
-            ResultSet rs = null;
+            connection = connect();
             query = connection.prepareStatement("SELECT * FROM ShortURL WHERE custId = ?");
-            query.setLong(1, CustId);
+            query.setLong(1, customerId);
             rs = query.executeQuery();
-            List<ShortURLDataHolder> shortURLList = writeResultSetToList(rs);
-            disconnect(connection, query, rs);
+            List<CustomerShortURL> shortURLList = parseResultSet(rs);
             return shortURLList;
         } catch (Exception ex) {
             Logger.getLogger(ReferralManager.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            disconnect(connection, query, rs);
         }
         return null;
+    }
+    
+    public static int numberOfRegisteredUsers(String shortURL) {
+        Connection connection = null;
+        PreparedStatement query = null;
+        ResultSet rs = null;
+        try {
+            connection = connect();
+            query = connection.prepareStatement("SELECT COUNT(*) as total FROM User, ShortURL WHERE User.campaignId = ShortURL.id AND ShortURL.shortUrl = ?");
+            query.setString(1, shortURL);
+            rs = query.executeQuery();
+            rs.next();
+            int totalNumbUsers = rs.getInt("total");
+            return totalNumbUsers;
+        } catch (Exception ex) {
+            Logger.getLogger(ReferralManager.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            disconnect(connection, query, rs);
+        }
+        return -1;
     }
     
     /**
@@ -136,16 +160,15 @@ public class ReferralManager {
     }
     
     /**
-     * Helper function: given a resultSet, processes the data into a list of ShortURLDataHolder objects
+     * Helper function: given a resultSet, processes the data into a list of CustomerShortURL objects
      * @param resultSet a ResultSet returned from a database query
-     * @return a List of ShortURLDataHolder objects
+     * @return a List of CustomerShortURL objects
      */
-    private static List<ShortURLDataHolder> writeResultSetToList(ResultSet resultSet) {
-        List<ShortURLDataHolder> shortURLList = new ArrayList<>(); 
+    private static List<CustomerShortURL> parseResultSet(ResultSet resultSet) {
+        List<CustomerShortURL> shortURLList = new ArrayList<>(); 
         try {
-            ShortURLDataHolder newShortURL;
             while (resultSet.next()) {
-                newShortURL = new ShortURLDataHolder(Long.parseLong(resultSet.getString("custId")), resultSet.getString("shortUrl"));
+                CustomerShortURL newShortURL = new CustomerShortURL(Long.parseLong(resultSet.getString("custId")), resultSet.getString("shortUrl"));
                 shortURLList.add(newShortURL);     
             }
             return shortURLList;
