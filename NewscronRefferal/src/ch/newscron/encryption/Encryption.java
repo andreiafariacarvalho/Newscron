@@ -14,6 +14,9 @@ import javax.crypto.spec.SecretKeySpec;
 import javax.crypto.Cipher;
 import org.apache.commons.codec.binary.Base64;
 import java.security.MessageDigest;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.StringJoiner;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -25,6 +28,8 @@ public class Encryption {
     private static final byte[] key = "newscron12345678".getBytes(); //Key for AES algorithm - it has to be a multiple of 16bytes
     private static final String initializationVector = "AAAAAAAAAAAAAAAA"; //needed for AES algorithm
     
+    private static final DateFormat valDateFormat = new SimpleDateFormat("dd.MM.yy"); // Format of the date used to store the validity
+    
     private static Cipher cipher; //describe the algorithm used for encryption
     static {
         try {
@@ -32,14 +37,31 @@ public class Encryption {
         } catch (Exception e) {} 
     }
     
+    public static String encode(long userId, String rew1, String rew2, Date val) {
+        try {
+            JSONObject inviteData = new JSONObject();
+            inviteData.put("userId", Long.toString(userId));
+            inviteData.put("rew1", rew1);
+            inviteData.put("rew2", rew2);
+            String valFormat = valDateFormat.format(val);
+            inviteData.put("val", valFormat);
+            return encode(inviteData);
+        } catch (Exception e) {}
+        
+        return null;
+    }
+    
     /**
      * Given a JSONObject, it is encoded and returned as a String.
-     * @param inviteData is a JSONObject having the data with the keys "customerId", "rew1", "rew2" and "val"
+     * @param inviteData is a JSONObject having the data with the keys "userId", "rew1", "rew2" and "val"
      * @return encoded string 
      */
-    public static String encode(JSONObject inviteData) {
+    private static String encode(JSONObject inviteData) {
+        System.out.println("erfefefr");
         try {
+            System.out.println("edfbjknlw");
             if(checkDataValidity(inviteData)) {     //NOTE: To obtain max number of available characters call the function availableParameterLength(String initialURL)
+                System.out.println(inviteData.toJSONString());
                 //Create hash from inviteData fields
                 byte[] hash = createMD5Hash(inviteData);
 
@@ -52,12 +74,11 @@ public class Encryption {
   
     /**
      * Given a JSONObject, and maybe an hash, it is encoded and returned as a String.
-     * @param inviteData is a JSONObject having the data with the keys "customerId", "rew1", "rew2" and "val"
+     * @param inviteData is a JSONObject having the data with the keys "userId", "rew1", "rew2" and "val"
      * @param md5Hash is a String that substitute the hash computed using md5 algorithm, in case it is not null and not empty
      * @return encoded string 
      */
     protected static String encode(JSONObject inviteData, String md5Hash) {
-        
         try {
             //Check in case we want to add a given hash (having at the end a corrupt data)
             if(md5Hash != null && !md5Hash.isEmpty()) {
@@ -82,7 +103,7 @@ public class Encryption {
      * @param encodedUrl is a String that have the full data encrypted
      * @return decoded String
      */
-    public static String decode(String encodedUrl) {
+    public static CouponData decode(String encodedUrl) {
         
         try {
             
@@ -103,7 +124,8 @@ public class Encryption {
                 byte[] hashOfData = createMD5Hash(receivedData);
 
                 if (receivedHash.equals(new String(hashOfData,"UTF-8"))) { //Valid data
-                    return receivedData.toString();
+                    Date valFormat = valDateFormat.parse((String)receivedData.get("val"));
+                    return new CouponData(Long.parseLong((String)receivedData.get("userId")), (String)receivedData.get("rew1"), (String)receivedData.get("rew2"), valFormat);
                 }
             }
         } catch (Exception e) {} //Invalid data (including encryption algorithm exceptions
@@ -117,9 +139,10 @@ public class Encryption {
      * @return a MD5 hash of type byte[]
      */
     public static byte[] createMD5Hash(JSONObject obj) {
-        //Create a string of the fields with format: "<customerId>$<rew1>$<rew2>$<val>"
+        System.out.println("jknlnkj");
+        //Create a string of the fields with format: "<userId>$<rew1>$<rew2>$<val>"
         StringJoiner stringToHash = new StringJoiner("$");
-        stringToHash.add((String) obj.get("custID"));
+        stringToHash.add((String) obj.get("userId"));
         stringToHash.add((String) obj.get("rew1"));
         stringToHash.add((String) obj.get("rew2"));
         stringToHash.add((String) obj.get("val"));
@@ -141,7 +164,7 @@ public class Encryption {
      */
     public static boolean checkDataValidity(JSONObject obj) {
         return obj != null && obj.size() == 4 && 
-                obj.get("custID") != null && !((String)obj.get("custID")).isEmpty() &&
+                obj.get("userId") != null && !((String)obj.get("userId")).isEmpty() &&
                 obj.get("rew1") != null && !((String)obj.get("rew1")).isEmpty() &&
                 obj.get("rew2") != null && !((String)obj.get("rew2")).isEmpty() &&
                 obj.get("val") != null && !((String)obj.get("val")).isEmpty();
@@ -158,7 +181,7 @@ public class Encryption {
     public static Integer availableParameterLength(String initialURL) {
         try {
             JSONObject emptyData = new JSONObject();
-            emptyData.put("custID", "");
+            emptyData.put("userId", "");
             emptyData.put("rew1", "");
             emptyData.put("rew2", "");
             emptyData.put("val", "");

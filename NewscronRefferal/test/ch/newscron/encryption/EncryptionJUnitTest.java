@@ -7,9 +7,10 @@ package ch.newscron.encryption;
 
 import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
-import java.util.Iterator;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -24,6 +25,7 @@ import static org.junit.Assert.*;
  */
 public class EncryptionJUnitTest {
     JSONObject inviteData = new JSONObject();
+    DateFormat valDateFormat = new SimpleDateFormat("dd.MM.yy");
 
     public EncryptionJUnitTest() {
     }
@@ -38,10 +40,10 @@ public class EncryptionJUnitTest {
     
     @Before
     public void setUp() {
-        inviteData.put("custID", "12345");
+        inviteData.put("userId", "12345");
         inviteData.put("rew1", "40%");
         inviteData.put("rew2", "50%");
-        inviteData.put("val", "05/10/2015");
+        inviteData.put("val", "05.10.2015");
     }
     
     @After
@@ -49,42 +51,43 @@ public class EncryptionJUnitTest {
     }
 
     @Test
-    public void encodeTest() throws UnsupportedEncodingException, NoSuchAlgorithmException, ParseException {
+    public void encodeTest() throws UnsupportedEncodingException, NoSuchAlgorithmException, ParseException, java.text.ParseException {
         
         //With null string
-        assertNull(Encryption.encode(null));
+        assertNull(Encryption.encode(0, null, null, null));
+        assertNull(Encryption.encode(0, null, null, new Date()));
 
+        long userIdInvite = Long.parseLong((String)inviteData.get("userId"));
+        String rew1Invite = (String)inviteData.get("rew1");
+        String rew2Invite = (String)inviteData.get("rew2");
+        Date valInvite = valDateFormat.parse((String)inviteData.get("val"));
+        
         // With working string
-        String stringEncoded = Encryption.encode(inviteData);
+        String stringEncoded = Encryption.encode(userIdInvite, rew1Invite, rew2Invite, valInvite);
         assertNotNull(stringEncoded);
         assertFalse(inviteData.toString().equals(stringEncoded));
         assertTrue(inviteData.toString().length() < stringEncoded.length());
 
-        // With not appropriate string
-        inviteData.put("extra", "value");
-        assertNull(Encryption.encode(inviteData));
-
-        inviteData.remove("extra");
-        inviteData.remove("val");
-        assertNull(Encryption.encode(inviteData));
-
     }
     
     @Test
-    public void decodeTest() throws UnsupportedEncodingException, NoSuchAlgorithmException, ParseException {
+    public void decodeTest() throws UnsupportedEncodingException, NoSuchAlgorithmException, ParseException, java.text.ParseException {
         
         // With null string
         assertNull(Encryption.decode(null));
 
+        long userIdInvite = Long.parseLong((String)inviteData.get("userId"));
+        String rew1Invite = (String)inviteData.get("rew1");
+        String rew2Invite = (String)inviteData.get("rew2");
+        Date valInvite = valDateFormat.parse((String)inviteData.get("val"));
+        
         // With working string
-        String stringEncoded = Encryption.encode(inviteData);
-        String stringDecoded = Encryption.decode(stringEncoded);
+        String stringEncoded = Encryption.encode(userIdInvite, rew1Invite, rew2Invite, valInvite);
+        CouponData stringDecoded = Encryption.decode(stringEncoded);
         assertNotNull(stringDecoded);
 
-        JSONParser parser = new JSONParser();
-        JSONObject decodedJSON = (JSONObject) parser.parse(stringDecoded);
         inviteData.remove("hash");
-        assertTrue(compareJSONObjects(inviteData, decodedJSON));
+        assertTrue(compareCouponData(inviteData, stringDecoded));
 
         // With not appropriate string (invalid)
         String encodedWrong = "vKnxBLGBGdG3PIZlv4w8DpyQfvPhtz_7HayuA6b2-DC1M45RL7LcBc_p2IIXl4eXDphGxx5esQx74kE-txVij1KuqgW6J7pC2yCSIDxVfJkfHdubKRdvC7aFhclXq";
@@ -95,11 +98,10 @@ public class EncryptionJUnitTest {
 
         // Corrupt data
         JSONObject inviteData2 = new JSONObject();
-        inviteData2.put("custID", "12345");
+        inviteData2.put("userId", "12345");
         inviteData2.put("rew1", "40%");
         inviteData2.put("rew2", "100%"); //!! Changed (in comparison to inviteData)
-        inviteData2.put("val", "05/10/2015");
-
+        inviteData2.put("val", "05.10.2015");
 
         //Send corrupt data (inviteData2) with valid hash of inviteData.
         //The hash of the corrupt data will differ from the hash of the valid data.
@@ -119,7 +121,7 @@ public class EncryptionJUnitTest {
         assertTrue(Encryption.checkDataValidity(inviteData));
 
         // With not appropriate data
-        inviteData.remove("custID");
+        inviteData.remove("userId");
         assertFalse(Encryption.checkDataValidity(inviteData));
         //Valid length - invalid fields
         inviteData = createNewInviteDataObject();
@@ -145,26 +147,19 @@ public class EncryptionJUnitTest {
         assertFalse(Encryption.checkDataValidity(inviteData));
     }
     
-    public boolean compareJSONObjects(JSONObject one, JSONObject two) {
-        if (one.keySet().size() != two.keySet().size()) {
-            return false;
-        }
-        Iterator<String> keysOne = one.keySet().iterator();
-        while (keysOne.hasNext()) {
-            String key = (String) keysOne.next();
-            if (two.get(key) == null || !one.get(key).equals(two.get(key))) {
-                return false;
-            }            
-        }
-        return true;
+    private boolean compareCouponData(JSONObject one, CouponData two) throws java.text.ParseException {
+        return two.getUserId() == Long.parseLong((String) one.get("userId")) &&
+                two.getRew1().equals(one.get("rew1")) &&
+                two.getRew2().equals(one.get("rew2")) &&
+                two.getVal().equals(valDateFormat.parse((String)one.get("val")));
     }
     
     public JSONObject createNewInviteDataObject() {
         JSONObject testInviteData = new JSONObject();
-        testInviteData.put("custID", "12345");
+        testInviteData.put("userId", "12345");
         testInviteData.put("rew1", "40%");
         testInviteData.put("rew2", "50%");
-        testInviteData.put("val", "05/10/2015");
+        testInviteData.put("val", "05.10.2015");
         return testInviteData;
     }
 }
